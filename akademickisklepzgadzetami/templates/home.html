@@ -1,0 +1,24 @@
+{% load static %}
+{% if debug %}
+  {% load django_browser_reload %}
+  {% django_browser_reload_script %}
+{% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akademicki Sklep Gadżetami</title>
+   <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+<body>
+    <header class="bg-blue-100 text-white p-4">
+        <img src="{% static 'theme/images/logo-ajp-2.png' %}" alt="Logo">
+        <h1 class="text-xl text-red-400 font-bold">Akademicki Sklep z Gadżetami</h1>
+    </header>
+    
+    <main class="p-6">
+        <p class="text-lg">Witamy w sklepie z akcesoriami AJP</p>
+    </main>
+</body>
+</html>
