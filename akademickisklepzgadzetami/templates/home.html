@@ -12,13 +12,628 @@
    <link href="{% static 'css/output.css' %}" rel="stylesheet">
 </head>
 <body>
-    <header class="bg-blue-100 text-white p-4">
-        <img src="{% static 'theme/images/logo-ajp-2.png' %}" alt="Logo">
-        <h1 class="text-xl text-red-400 font-bold">Akademicki Sklep z Gadżetami</h1>
-    </header>
-    
-    <main class="p-6">
-        <p class="text-lg">Witamy w sklepie z akcesoriami AJP</p>
+    <!-- NAV-BAR  -->
+    <nav class="flex flex-col">
+        <div class="bg-blue-100 text-white p-4">
+            <div class="flex items-center w-2/3 max-w-7xl justify-around mx-auto">
+                <div class="flex items-center text-[#015F8A] font-bold">
+                    <img width="80" src="{% static 'theme/images/ajp_logo.png'%}" alt="Logo">
+                    <div class="flex flex-col text-center">
+                        <h2 class="text-xl uppercase font-black leading-5">Akademia</h2>
+                        <span class="text-xl font-black uppercase leading-5">im. Jakuba </br> z Paradyża</span>
+                    </div>
+                </div>
+                <label
+                    for="search-input" 
+                    class="text-black flex gap-1 items-center bg-white rounded-full px-2 h-11 w-80
+                    focus-within:outline focus-within:outline-1 focus-within:outline-[#015F8A]">
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="24" height="24" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        stroke-width="2" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        class="lucide lucide-search-icon lucide-search"
+                    >
+                        <path d="m21 21-4.34-4.34"/>
+                        <circle cx="11" cy="11" r="8"/>
+                    </svg>
+                    <input 
+                        id="search-input"
+                        class="text-black focus:outline-none w-full text-sm font-medium " 
+                        type="text"
+                    />
+                </label>
+                <div class="flex items-center gap-5">
+                    <button
+                    class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
+                    rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
+                    before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
+                    before:transition-transform before:duration-200 before:ease-linear hover:text-white
+                    flex items-center gap-1"
+                >
+                    Zaloguj się
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="24" height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" 
+                        class="lucide lucide-user-icon lucide-user"
+                    >
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </button>
+                <div class="relative group">
+                    <button
+                    class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
+                    rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
+                    before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
+                    before:transition-transform before:duration-200 before:ease-linear hover:text-white
+                    flex gap-1"
+                >
+                    Koszyk
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-shopping-cart-icon lucide-shopping-cart"
+                    >
+                        <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                    </svg>
+                </button>
+                <span class="absolute bg-[#015F8A] w-6 h-6 flex items-center justify-center rounded-full top-0
+                            right-0 -translate-y-1/2 z-10 font-medium group-hover:bg-[#333] transition-colors
+                            duration-200 ease-linear"
+                >
+                    5
+                </span>
+                </div> 
+                </div>
+            </div>
+        </div>
+        <div class="bg-[#333] flex z-50">
+            <ul class="flex gap-5 mx-auto font-medium">
+                <li class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10 
+                    after:absolute after:inset-0 after:-z-10 hover:after:bg-[#DBEAFE]/30
+                    after:rounded-full flex items-center gap-1 my-3 group">
+                        Gadżety
+                            <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="16" height="16" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        stroke-width="2" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        class="lucide lucide-chevron-down-icon lucide-chevron-down transition-transform duration-200 ease-linear
+                         group-hover:-scale-100"
+                    >
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                    <div class="absolute translate-y-[100%] bottom-0 pt-2 left-0">
+                         <div class="bg-[#1c1c1c] rounded-md min-w-36 grid
+                                grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-200 ease-linear
+                                z-50"
+                    >
+                        <div class="overflow-hidden">
+                            <ul class="p-1 text-white">
+                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer">Kubki</li>
+                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer">Torby</li>
+                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer">Notesy</li>
+                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer">Długopisy</li>
+                            </ul>
+                        </div>
+                      
+                    </div>
+                    </div>
+                </li>
+                 <li 
+                    class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10 
+                    after:absolute after:inset-0 after:hover:bg-[#DBEAFE]/30 after:-z-10
+                    after:rounded-full my-3"
+                >
+                    Bluzy
+                </li>
+                 <li 
+                    class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10 
+                    after:absolute after:inset-0 after:hover:bg-[#DBEAFE]/30 after:-z-10
+                    after:rounded-full my-3"
+                >
+                    Koszulki
+                </li>
+                <li 
+                    class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10 
+                    after:absolute after:inset-0 after:hover:bg-[#DBEAFE]/30 after:-z-10
+                    after:rounded-full my-3"
+                >
+                    Czapki
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+        <!-- PRODUCT-CORUSELL -->
+         <!-- <div class="p-8">
+               <div class="w-2/3 h-[200px] mx-auto relative overflow-hidden shadow-inner shadow-black py-3 rounded-lg">
+            <div class="h-full gap-2 flex w-fit animate-scroll-slow hover:animation-paused">
+                <div class="h-fit flex items-center justify-center gap-2 w-max">
+                    {% for item in items %}
+                        <div class="h-44 flex flex-col bg-blue-100 group transition-all duration-300 cursor-pointer">
+                            <div class="bg-black text-center p-1">
+                                <h3 class="text-white font-medium">{{ item.name }}</h3>
+                            </div>
+                            <div class="w-36 p-4 h-[144px] relative flex items-center justify-center 
+                                     after:absolute after:w-3/4 after:h-3 after:left-1/2
+                                     after:-translate-x-1/2 after:bg-drop-shadow
+                                     after:rounded-[50%] after:bottom-[2px] group-hover:after:w-[90%]
+                                     group-hover:after:bg-drop-hover
+                                     group-hover:after:rounded-[40%] after:transtion-all after:duration-300"
+                            >
+                                <img src="{% static item.image %}" 
+                                     alt="{{ item.name }}"
+                                     class="h-full group-hover:-translate-y-2 transition-all duration-300" 
+                                />
+                            </div>
+                        </div>
+                    {% endfor %}    
+                </div>
+                <div class="h-fit flex gap-2 items-center justify-center w-max">
+                            {% for item in items %}
+                            <div class="h-44 flex flex-col bg-blue-100 group transition-all duration-300 cursor-pointer">
+                                <div class="bg-black text-center p-1">
+                                    <h3 class="text-white font-medium">{{ item.name }}</h3>
+                                </div>
+                                <div class="w-36 p-4 h-[144px] relative flex items-center justify-center 
+                                     after:absolute after:w-3/4 after:h-3 after:left-1/2
+                                     after:-translate-x-1/2 after:bg-drop-shadow
+                                     after:rounded-[50%] after:bottom-[2px] group-hover:after:w-[90%]
+                                     group-hover:after:bg-drop-hover
+                                     group-hover:after:rounded-[40%] after:transtion-all after:duration-300"
+                            >
+                                <img src="{% static item.image %}" 
+                                     alt="{{ item.name }}"
+                                     class="h-full group-hover:-translate-y-2 transition-all duration-300" 
+                                />
+                            </div>
+                        </div>
+                    {% endfor %}    
+                </div>
+            </div>
+        </div>
+         </div> -->
+
+         <div 
+            class="w-full h-96 relative z-10 flex items-center justify-center
+            after:bg-[url('/static/theme/images/ajp.jpg')] after:bg-cover after:bg-no-repeat after:bg-bottom
+            after:absolute after:inset-0 after:-z-10 after:grayscale-[20%] after:opacity-40"
+        >
+        <div>
+            <h1 class="text-gray-800 text-3xl font-extrabold uppercase max-w-[500px] text-center">
+                Witaj w sklepie z gadżetami </br> Akademii im. </br> Jakuba z Paradyża
+            </h1>
+        </div>
+        </div>
+        <div class="w-full h-16 bg-[#333] flex overflow-hidden">
+            <div class="flex my-auto items-center gap-5 animate-scroll-banner text-white">
+                <div class="flex items-center gap-5 h-full font-medium">
+                    <p class="text-nowrap">Witajcie w sklepie z gadżetami AJP</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Zniżka dla studentów drugiego stopnia</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Gadżety oraz ubrania reprezentujące uczelnię</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Przeceny sezonowe</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                      <p class="text-nowrap">Witajcie w sklepie z gadżetami AJP</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Zniżka dla studentów drugiego stopnia</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Gadżety oraz ubrania reprezentujące uczelnię</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Przeceny sezonowe</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                </div>
+                 <div class="flex items-center gap-5 h-full font-medium">
+                    <p class="text-nowrap">Witajcie w sklepie z gadżetami AJP</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Zniżka dla studentów drugiego stopnia</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Gadżety oraz ubrania reprezentujące uczelnię</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Przeceny sezonowe</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                      <p class="text-nowrap">Witajcie w sklepie z gadżetami AJP</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Zniżka dla studentów drugiego stopnia</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Gadżety oraz ubrania reprezentujące uczelnię</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Przeceny sezonowe</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                </div>
+            </div>
+        </div>
+
+        <section class="mt-24 w-full flex flex-col">
+            <h2 
+                class="mx-auto font-extrabold text-3xl uppercase relative px-2 text-[#333]
+                after:absolute after:w-8 after:h-1 after:rounded-md after:bg-[#333] after:block
+                after:top-1/2 after:left-0 after:-translate-x-full after:-translate-y-1/2
+                before:absolute before:w-8 before:h-1 before:rounded-md before:bg-[#333] before:block
+                before:top-1/2 before:right-0 before:translate-x-full before:-translate-y-1/2"
+            >
+                Nowe przedmioty
+            </h2>
+            <div
+                class="bg-blue-100 w-full flex-1 mt-4 px-4 py-12"
+            >
+
+                <div class="grid grid-cols-3 gap-10 place-items-center items-stretch w-fit mx-auto">
+                     {% for item in items %}
+                     <div class="flex flex-col group cursor-pointer relative
+                                after:absolute after:inset-0 after:bg-[url('/static/theme/images/backgroundTile.png')]
+                                after:-z-10 z-10 after:bg-cover after:bg-no-repeat bg-white shadow-md
+                                after:bg-bottom after:rounded-b-lg after:brightness-90
+                                p-4 rounded-lg justify-stretch w-[250px] h-[330px]">
+                            {% if item.promotion == 'true' %}
+                                <span 
+                                    class="absolute block bg-black px-2 py-1 left-2 top-2 rounded-full text-gray-100 font-medium"
+                                >
+                                    Promocja
+                                </span>
+                            {% endif %}
+                            <div class="relative flex items-end justify-center 
+                                        mt-10 h-full w-full pb-5
+                                        after:w-[64px]
+                                        after:h-[64px]
+                                        after:transition-all after:duration-[400ms]
+                                        after:absolute after:z-5 after:-bottom-2 after:left-14
+                                        after:bg-[url('/static/theme/images/smile.png')] after:bg-no-repeat after:bg-contain
+                                        after:scale-x-0 after:scale-y-0 after:opacity-0
+                                        group-hover:after:scale-x-100 group-hover:after:scale-y-100 
+                                        group-hover:after:-translate-y-6 group-hover:after:-translate-x-6
+                                        group-hover:after:-rotate-[20deg]
+                                        group-hover:after:opacity-100 after:ease-in"
+                            >
+                                <img src="{% static item.image %}" 
+                                     alt="{{ item.name }}"
+                                     class="w-[100px] z-10 transition-all duration-[400ms] ease-linear
+                                            group-hover:scale-[85%]" 
+                                />
+                                <div class="absolute opacity-0 z-5 group-hover:rotate-12 group-hover:-translate-y-10
+                                            group-hover:translate-x-10 group-hover:opacity-100 transition-all duration-[400ms]
+                                            ease-in scale-x-0 scale-y-0 group-hover:scale-x-100 group-hover:scale-y-100"
+                                >
+                                    <img
+                                        height="64"
+                                        width="64" 
+                                        src="/static/theme/images/heart.png"
+                                    />
+                                </div>
+                            </div>
+                            <div class="w-full mt-3">
+                                <span 
+                                    class="px-4 py-1 bg-zinc-300 text-gray-800 block rounded-full w-full font-bold shadow-md
+                                        whitespace-nowrap text-nowrap truncate"
+                                >
+                                    {{item.name}}
+                                </span>
+                            </div>
+                            <div class="mt-5 flex items-center w-full relative">
+                                <button class="bg-black hover:bg-slate-800 text-gray-100 p-2 rounded-full relative group/add">
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        width="24" height="24" 
+                                        viewBox="0 0 24 24" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        stroke-width="2" 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        class="lucide lucide-shopping-cart-icon lucide-shopping-cart"
+                                    >
+                                        <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+                                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                                    </svg>
+                                    <div 
+                                        class="absolute bottom-[6px] right-[6px] bg-black group-hover/add:bg-slate-800 rounded-full"
+                                    >
+                                        <svg 
+                                            xmlns="http://www.w3.org/2000/svg" 
+                                            width="16" height="16" 
+                                            viewBox="0 0 20 20" 
+                                            fill="none" 
+                                            stroke="currentColor" 
+                                            stroke-width="2" 
+                                            stroke-linecap="round" 
+                                            stroke-linejoin="round" 
+                                            class="
+                                                lucide lucide-plus-icon lucide-plus"
+                                    >
+                                        <path d="M5 12h14"/><path d="M12 5v14"/>
+                                    </svg>
+                                    </div>
+                                </button>
+                                <div
+                                    class="text-lg font-medium bg-black pr-5 pl-2 rounded-md text-gray-100
+                                    absolute -right-9 min-w-[80px]"
+                                    style="clip-path: polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%);"
+                                >
+                                    <div 
+                                    >   
+                                        {% if item.promotion == 'true' %}
+                                            <span>
+                                                {{item.discountedPrice}} zł
+                                            </span>
+                                        {% endif %}
+                                        <span class="{% if item.promotion == 'true' %} line-through text-sm text-red-400 {% else %} bg-black {% endif %}">
+                                            {{item.price}} zł
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                {% endfor %}
+                </div>
+               
+            </div>
+        </section>
+
+        <footer class="w-full bg-black p-10">
+            <section class="mx-auto w-2/3 max-w-7xl">
+                <div class="flex items-center justify-center gap-3">
+                    <img 
+                        width="128" 
+                        src="/static/theme/images/ajp_logo.png" 
+                        class="object-contain"
+                    />
+                    <div class="flex gap-20">
+                        <div class="flex flex-col gap-3 font-medium text-gray-100">
+                            <div class="relative w-full flex items-center gap-3">
+                                <h1 class="w-fit text-xl text-amber-500"
+                                >
+                                    Kontakt
+                                </h1>
+                                <span class="h-[2px] flex-1 bg-amber-500"></span>
+                            </div>
+                            <h2 class="text-lg font-semibold">
+                                Wydział Techniczny </br> Akademii im. Jakuba </br> z Paradyża
+                            </h2>
+                            <p>
+                                ul. Fryderyka Chopina 52, </br> budynek 5, pokój 113 </br> 66-400 Gorzów Wielkopolski
+                            </p>
+                            <div class="flex gap-2">
+                                <svg 
+                                    xmlns="http://www.w3.org/2000/svg" 
+                                    width="24" height="24" 
+                                    viewBox="0 0 24 24" fill="none" 
+                                    stroke="currentColor" stroke-width="2" 
+                                    stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    class="lucide lucide-phone-icon lucide-phone"
+                                >
+                                    <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0
+                                    0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/>
+                                </svg>
+                                <p>
+                                    Tel./fax: +48 95 72 79 536  
+                                </p>
+                            </div>
+                            <div class="flex gap-2 text-amber-500">
+                                <svg 
+                                    xmlns="http://www.w3.org/2000/svg" 
+                                    width="24" height="24" 
+                                    viewBox="0 0 24 24" fill="none" 
+                                    stroke="currentColor" stroke-width="2" 
+                                    stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    class="lucide lucide-mail-icon lucide-mail"
+                                >
+                                    <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                </svg>
+                                <a href="mailto:wt@ajp.edu.pl">E-mail: wt@ajp.edu.pl</a>
+                            </div>
+                        </div>
+                          <div class="flex flex-col gap-3 font-medium text-gray-100">
+                            <div class="relative w-full flex items-center gap-3">
+                                <h1 class="w-fit text-xl text-amber-500"
+                                >
+                                    Sekretariat
+                                </h1>
+                                <span class="h-[2px] flex-1 bg-amber-500"></span>
+                            </div>
+                            <p>
+                                ul. Fryderyka Chopina 52, </br> budynek 5, pokój 113 </br> 66-400 Gorzów Wielkopolski
+                            </p>
+                            <div class="flex gap-2">
+                                <svg 
+                                    xmlns="http://www.w3.org/2000/svg" 
+                                    width="24" height="24" 
+                                    viewBox="0 0 24 24" fill="none" 
+                                    stroke="currentColor" stroke-width="2" 
+                                    stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    class="lucide lucide-phone-icon lucide-phone"
+                                >
+                                    <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0
+                                    0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/>
+                                </svg>
+                                <p>
+                                    Tel./fax: +48 95 72 79 536  
+                                </p>
+                            </div>
+                            <div class="flex gap-2 text-amber-500">
+                                <svg 
+                                    xmlns="http://www.w3.org/2000/svg" 
+                                    width="24" height="24" 
+                                    viewBox="0 0 24 24" fill="none" 
+                                    stroke="currentColor" stroke-width="2" 
+                                    stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    class="lucide lucide-mail-icon lucide-mail"
+                                >
+                                    <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/>
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                </svg>
+                                <a href="mailto:wt@ajp.edu.pl">E-mail: wt@ajp.edu.pl</a>
+                            </div>
+                                <p>
+                                    Godziny przyjęć interesantów
+                                </p>
+                                <p>
+                                    od poniedziałku do piątku: </br> 8:00-14:30
+                                </p>
+                                <p>
+                                    przyjmowanie skarg i wniosków: </br> 10:00-14:00
+                                </p>
+                        </div>
+                          <div class="flex flex-col gap-3 font-medium text-gray-100">
+                            <div class="relative w-full flex items-center gap-3">
+                                <h1 class="w-fit text-xl text-amber-500"
+                                >
+                                    Dziekanat
+                                </h1>
+                                <span class="h-[2px] flex-1 bg-amber-500"></span>
+                            </div>
+                            <p>
+                               Zespół dziekanatów </br>
+                                ul. Fryderyka Chopina 52, </br>
+                                budynek 7, pokój 2
+                            </p>
+                            <div class="flex gap-2">
+                                <svg 
+                                    xmlns="http://www.w3.org/2000/svg" 
+                                    width="24" height="24" 
+                                    viewBox="0 0 24 24" fill="none" 
+                                    stroke="currentColor" stroke-width="2" 
+                                    stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    class="lucide lucide-phone-icon lucide-phone"
+                                >
+                                    <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0
+                                    0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/>
+                                </svg>
+                                <p>
+                                    Tel.: +48 95 72 16 097  
+                                </p>
+                            </div>
+                            <p>Godziny przyjęć:</p>
+                            <p>od poniedziałku do piątku: </br> 8:00-12:00</p>
+                            <p>W czasie zjazdów: </br> Sobota - godz.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="flex gap-3 w-fit ml-auto">
+                <a 
+                    target="_blank"
+                    href="https://www.facebook.com/ajpgorzow"
+                    class="text-gray-100 p-2 rounded-full flex items-center justify-center border border-gray-100 hover:bg-gray-900/50"
+                >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="24" height="24" 
+                        viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2" 
+                        stroke-linecap="round" stroke-linejoin="round" 
+                        class="lucide lucide-facebook-icon lucide-facebook"
+                    >
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                    </svg>
+                </a>
+                <a
+                    target="_blank"
+                    href="https://www.instagram.com/azsajpgorzow"
+                    class="text-gray-100 p-2 rounded-full flex items-center justify-center border border-gray-100 hover:bg-gray-900/50"
+                >
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="24" height="24" 
+                        viewBox="0 0 24 24" fill="none" 
+                        stroke="currentColor" stroke-width="2" 
+                        stroke-linecap="round" stroke-linejoin="round" 
+                        class="lucide lucide-instagram-icon lucide-instagram"
+                    >
+                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                    </svg>
+                </a>
+                <div class="flex gap-3">
+                    <a target="_blank" href="https://github.com/Sandybanks" class="flex items-center gap-2 text-gray-100 px-2 rounded-full uppercase font-medium text-xs border
+                     border-gray-100 cursor-pointer hover:bg-gray-900/50">
+                        Front-end:
+                      
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" 
+                            viewBox="0 0 24 24" fill="none" 
+                            stroke="currentColor" stroke-width="2" 
+                            stroke-linecap="round" stroke-linejoin="round" 
+                            class="lucide lucide-github-icon lucide-github"
+                        >
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6
+                            2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                            <path d="M9 18c-4.51 2-5-2-7-2"/>
+                        </svg>
+                    
+                    </a>
+                   <a target="_blank" href="#" class="flex items-center gap-2 text-gray-100 px-2 rounded-full uppercase font-medium text-xs border
+                        border-gray-100 cursor-pointer hover:bg-gray-900/50">
+                        Back-end:
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" 
+                            viewBox="0 0 24 24" fill="none" 
+                            stroke="currentColor" stroke-width="2" 
+                            stroke-linecap="round" stroke-linejoin="round" 
+                            class="lucide lucide-github-icon lucide-github"
+                        >
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6
+                            2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                            <path d="M9 18c-4.51 2-5-2-7-2"/>
+                        </svg>
+                  
+                    </a>
+                    <a target="_blank" href="https://github.com/jakubtokarczykajp" class="flex items-center gap-2 text-gray-100 px-2 rounded-full uppercase font-medium text-xs border
+                     border-gray-100 cursor-pointer hover:bg-gray-900/50">
+                        Dev-ops:
+               
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" 
+                            viewBox="0 0 24 24" fill="none" 
+                            stroke="currentColor" stroke-width="2" 
+                            stroke-linecap="round" stroke-linejoin="round" 
+                            class="lucide lucide-github-icon lucide-github"
+                        >
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6
+                            2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                            <path d="M9 18c-4.51 2-5-2-7-2"/>
+                        </svg>
+                   
+                    </a>
+                </div>
+            </div>
+        </footer>
+
     </main>
 </body>
 </html>
