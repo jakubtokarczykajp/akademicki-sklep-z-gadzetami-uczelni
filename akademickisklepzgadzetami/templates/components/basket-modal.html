@@ -1,0 +1,41 @@
+<div data-basket-wrapper class="fixed inset-0 bg-transparent z-50 pointer-events-none
+  transition-all duration-300 ease-linear flex flex-col">
+  <div 
+  data-basket-modal
+  class="bg-[#333] h-screen w-80 fixed top-0 right-0 z-50 p-3 rounded-l-2xl
+         translate-x-full transition-transform duration-300 ease-in-out flex flex-col"
+  >
+
+    <header class="border-b px-2">
+      <h2 class="text-xl font-bold mb-4 text-white">Twój koszyk</h2>
+    </header>
+    <button
+      onclick="closeBasket()" 
+      data-basket-close class="text-white bg-transparent w-5 h-5 flex rounded-full
+      items-center justify-center absolute top-3 right-3 hover:bg-slate-400
+      hover:text-black transition-all duration-300 ease-linear">
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="24" height="24" 
+        viewBox="0 0 24 24" 
+        fill="none" stroke="currentColor" 
+        stroke-width="2" stroke-linecap="round" 
+        stroke-linejoin="round" 
+        class="lucide lucide-x-icon lucide-x"
+      >
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+      </svg>
+    </button>
+
+    <div data-basket-content class="text-gray-300 px-2 flex flex-col gap-4
+     min-h-0 flex-1 overflow-auto custom-scroll my-4">
+      <!-- CHOSEN PRODUCTS HERE -->
+    </div>
+    <button
+      data-summary-button    
+      class="bg-[#1e1e1e] text-white p-2 w-full rounded-full border mt-auto mb-3
+      text-sm hover:bg-[#2c2c2c]">
+      Przejdź do podsumowania
+    </button>
+  </div>
+</div>

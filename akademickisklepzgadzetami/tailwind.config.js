@@ -4,6 +4,20 @@ module.exports = {
         "./templates/**/*.html", 
         "./**/templates/**/*.html",
     ],
+    safelist: [
+        'bg-gray-800',
+        'bg-gray-600',
+        'bg-blue-100',
+        'w-[60px]',
+        'w-8',
+        'h-[70px]',
+        'h-full',
+        'flex',
+        'flex-col',
+        'right-2',
+        'justify-between',
+        'bg-[#1e1e1e]'
+    ],
     theme: {
         extend: {
             backgroundImage: {
