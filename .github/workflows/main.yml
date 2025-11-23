@@ -1,23 +1,16 @@
 name: Deploy pythonanywhere webapp
 
 on:
-  # Triggers the workflow when you push to the main branch
   push:
     branches:
       - main
 
-  # Allows you to run this workflow manually from the Actions tab in GitHub
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
-    # Dodaj tę linię, aby wskazać konkretne środowisko GitHub (np. 'deployment', 'production')
-    # Dzięki temu job będzie miał dostęp do sekretów zdefiniowanych w tym środowisku.
     environment: deployment
-
-    # Define environment variables for the entire job, sourcing them securely from GitHub Secrets.
     env:
       PA_HOST: ${{ secrets.PYTHONANYWHERE_HOST }}
       PA_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
