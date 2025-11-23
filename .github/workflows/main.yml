@@ -12,6 +12,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
+    # Dodaj tę linię, aby wskazać konkretne środowisko GitHub (np. 'deployment', 'production')
+    # Dzięki temu job będzie miał dostęp do sekretów zdefiniowanych w tym środowisku.
+    environment: deployment
+
+    # Define environment variables for the entire job, sourcing them securely from GitHub Secrets.
+    env:
+      PA_HOST: ${{ secrets.PYTHONANYWHERE_HOST }}
+      PA_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+      PA_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+      PA_DOMAIN: ${{ secrets.PYTHONANYWHERE_DOMAIN }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,11 +31,11 @@ jobs:
       - name: Re-Deploy Pythonanywhere Django API
         uses: umuttopalak/pythonanywhere-deploy-action@v1.1.0
         with:
-          # Use the host appropriate for your account (e.g., 'www.pythonanywhere.com')
-          host: ${{ secrets.PYTHONANYWHERE_HOST }} 
+          # Now referencing the variables defined in the job's 'env' block
+          host: ${{ env.PA_HOST }} 
           # Your PythonAnywhere username
-          username: ${{ secrets.PYTHONANYWHERE_USERNAME }} 
+          username: ${{ env.PA_USERNAME }} 
           # Your PythonAnywhere API token (Crucial for automation)
-          api_token: ${{ secrets.PYTHONANYWHERE_API_TOKEN }} 
+          api_token: ${{ env.PA_TOKEN }} 
           # The domain name of your web app (e.g., 'yourusername.pythonanywhere.com')
-          domain_name: ${{ secrets.PYTHONANYWHERE_DOMAIN }}
+          domain_name: ${{ env.PA_DOMAIN }}
