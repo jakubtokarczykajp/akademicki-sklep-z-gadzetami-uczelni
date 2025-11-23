@@ -1,0 +1,25 @@
+name: Deploy pythonanywhere webapp
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Re-Deploy Pythonanywhere Django API
+        uses: umuttopalak/pythonanywhere-deploy-action@v1.1.0
+        with:
+          # Use the host appropriate for your account (e.g., 'www.pythonanywhere.com')
+          host: ${{ secrets.PYTHONANYWHERE_HOST }} 
+          # Your PythonAnywhere username
+          username: ${{ secrets.PYTHONANYWHERE_USERNAME }} 
+          # Your PythonAnywhere API token (Crucial for automation)
+          api_token: ${{ secrets.PYTHONANYWHERE_API_TOKEN }} 
+          # The domain name of your web app (e.g., 'yourusername.pythonanywhere.com')
+          domain_name: ${{ secrets.PYTHONANYWHERE_DOMAIN }}
