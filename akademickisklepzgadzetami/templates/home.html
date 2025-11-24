@@ -1,70 +1,12 @@
-{% load static %}
-{% if debug %}
-  {% load django_browser_reload %}
-  {% django_browser_reload_script %}
-{% endif %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademicki Sklep Gadżetami</title>
-   <link href="{% static 'css/output.css' %}" rel="stylesheet">
-</head>
-<body>
-    <!-- NAV-BAR  -->
-      {% include "components/nav.html" %}
-    <main>
-        <!-- PRODUCT-CORUSELL -->
-         <!-- <div class="p-8">
-               <div class="w-2/3 h-[200px] mx-auto relative overflow-hidden shadow-inner shadow-black py-3 rounded-lg">
-            <div class="h-full gap-2 flex w-fit animate-scroll-slow hover:animation-paused">
-                <div class="h-fit flex items-center justify-center gap-2 w-max">
-                    {% for item in items %}
-                        <div class="h-44 flex flex-col bg-blue-100 group transition-all duration-300 cursor-pointer">
-                            <div class="bg-black text-center p-1">
-                                <h3 class="text-white font-medium">{{ item.name }}</h3>
-                            </div>
-                            <div class="w-36 p-4 h-[144px] relative flex items-center justify-center 
-                                     after:absolute after:w-3/4 after:h-3 after:left-1/2
-                                     after:-translate-x-1/2 after:bg-drop-shadow
-                                     after:rounded-[50%] after:bottom-[2px] group-hover:after:w-[90%]
-                                     group-hover:after:bg-drop-hover
-                                     group-hover:after:rounded-[40%] after:transtion-all after:duration-300"
-                            >
-                                <img src="{% static item.image %}" 
-                                     alt="{{ item.name }}"
-                                     class="h-full group-hover:-translate-y-2 transition-all duration-300" 
-                                />
-                            </div>
-                        </div>
-                    {% endfor %}    
-                </div>
-                <div class="h-fit flex gap-2 items-center justify-center w-max">
-                            {% for item in items %}
-                            <div class="h-44 flex flex-col bg-blue-100 group transition-all duration-300 cursor-pointer">
-                                <div class="bg-black text-center p-1">
-                                    <h3 class="text-white font-medium">{{ item.name }}</h3>
-                                </div>
-                                <div class="w-36 p-4 h-[144px] relative flex items-center justify-center 
-                                     after:absolute after:w-3/4 after:h-3 after:left-1/2
-                                     after:-translate-x-1/2 after:bg-drop-shadow
-                                     after:rounded-[50%] after:bottom-[2px] group-hover:after:w-[90%]
-                                     group-hover:after:bg-drop-hover
-                                     group-hover:after:rounded-[40%] after:transtion-all after:duration-300"
-                            >
-                                <img src="{% static item.image %}" 
-                                     alt="{{ item.name }}"
-                                     class="h-full group-hover:-translate-y-2 transition-all duration-300" 
-                                />
-                            </div>
-                        </div>
-                    {% endfor %}    
-                </div>
-            </div>
-        </div>
-         </div> -->
+{% extends "base.html" %}
 
+{% block title %}Akademicki Sklep Gadżetami{% endblock %}
+
+{% block content %}
+
+{% include "components/basket-modal.html" %}
+
+    <main>
          <div 
             class="w-full h-96 relative z-10 flex items-center justify-center
             after:bg-[url('/static/theme/images/ajp.jpg')] after:bg-cover after:bg-no-repeat after:bg-bottom
@@ -246,7 +188,7 @@
                                         group-hover:after:-rotate-[20deg]
                                         group-hover:after:opacity-100 after:ease-in"
                             >
-                                <img src="{% static item.image %}" 
+                                <img src="/static/{{ item.image }}" 
                                      alt="{{ item.name }}"
                                      class="w-[100px] z-10 transition-all duration-[400ms] ease-linear
                                             group-hover:scale-[85%]" 
@@ -331,10 +273,6 @@
                
             </div>
         </section>
-
-         {% include "components/footer.html" %}
-
     </main>
-    <script src="{% static 'js/main.js' %}"></script>
-</body>
-</html>
+
+{% endblock %}
