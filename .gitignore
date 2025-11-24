@@ -12,6 +12,12 @@ ENV/
 env.bak/
 venv.bak/
 
+# --- Node ---
+
+node_modules/
+npm-debug.log
+yarn-error.log
+
 # --- Distribution / packaging ---
 build/
 dist/
@@ -28,7 +34,6 @@ dist/
 db.sqlite3
 media/
 staticfiles/
-static/
 
 # --- Unit test / coverage reports ---
 htmlcov/

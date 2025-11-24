@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Akademicki Sklep Gadżetami{% endblock %}
+
+{% block content %}
+
+{% include "components/basket-modal.html" %}
+
+    <main>
+         <div 
+            class="w-full h-96 relative z-10 flex items-center justify-center
+            after:bg-[url('/static/theme/images/ajp.jpg')] after:bg-cover after:bg-no-repeat after:bg-bottom
+            after:absolute after:inset-0 after:-z-10 after:grayscale-[20%] after:opacity-40"
+        >
+        <div>
+            <h1 class="text-gray-800 text-3xl font-extrabold uppercase max-w-[500px] text-center">
+                Witaj w sklepie z gadżetami </br> Akademii im. </br> Jakuba z Paradyża
+            </h1>
+        </div>
+        </div>
+        <div class="w-full h-16 bg-[#333] flex overflow-hidden">
+            <div class="flex my-auto items-center gap-5 animate-scroll-banner text-white">
+                <div class="flex items-center gap-5 h-full font-medium">
+                    <p class="text-nowrap">Witajcie w sklepie z gadżetami AJP</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Zniżka dla studentów drugiego stopnia</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Gadżety oraz ubrania reprezentujące uczelnię</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Przeceny sezonowe</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                      <p class="text-nowrap">Witajcie w sklepie z gadżetami AJP</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Zniżka dla studentów drugiego stopnia</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Gadżety oraz ubrania reprezentujące uczelnię</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Przeceny sezonowe</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                </div>
+                 <div class="flex items-center gap-5 h-full font-medium">
+                    <p class="text-nowrap">Witajcie w sklepie z gadżetami AJP</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Zniżka dla studentów drugiego stopnia</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Gadżety oraz ubrania reprezentujące uczelnię</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Przeceny sezonowe</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                      <p class="text-nowrap">Witajcie w sklepie z gadżetami AJP</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Zniżka dla studentów drugiego stopnia</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Gadżety oraz ubrania reprezentujące uczelnię</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                    <p class="text-nowrap">Przeceny sezonowe</p>
+                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                </div>
+            </div>
+        </div>
+
+        {% include "components/basket-modal.html" %}
+
+        <div class="w-full flex flex-col gap-10 items-center mt-20">
+            <div class="w-1/2 max-w-4xl bg-blue-100 shadow-[0_1px_2px_rgba(0,0,0,0.5)] rounded-md sticky top-20 flex overflow-hidden">
+                <div class="w-1/3 px-5 bg-black/50">
+                    <img class="w-full h-[388px]" src="/static/theme/images/student.png"/>
+                </div>
+                <div class="w-2/3 p-5">
+                    <h2 class="text-2xl font-semibold mb-5">🎓 Sklep Uczelniany styl, jakość i duch akademicki</h2>
+                    <p class="font-medium leading-7">W naszym sklepie znajdziesz nie tylko odzież i gadżety z logo uczelni, ale także produkty, które łączą wygodę, trwałość i dbałość o każdy detal.
+                    Wszystko po to, abyś mógł z dumą nosić barwy swojej uczelni — na zajęciach, w mieście czy podczas wydarzeń studenckich.</p>
+                </div>
+            </div>
+            
+            <div class="w-1/2 max-w-4xl bg-blue-100 shadow-[0_1px_2px_rgba(0,0,0,0.5)] rounded-md sticky top-20 flex overflow-hidden">
+                <div class="w-2/3 p-5">
+                    <h2 class="text-2xl font-semibold mb-5">👕 Odzież, która wyróżnia się jakością</h2>
+                    <p class="font-medium leading-7">Nasze koszulki i bluzy powstają z wysokogatunkowej, miękkiej bawełny o gramaturze 180-280 g/m².
+                        Dzięki temu są przyjemne w dotyku, przewiewne i zachowują swój kształt nawet po wielu praniach.
+                        Nadruki wykonujemy trwałą metodą sitodruku lub termotransferu, co gwarantuje odporność na spieranie i promieniowanie UV.</p>
+                </div>
+                <div class="w-1/3 bg-black/50">
+                    <img class="w-full h-[388px]" src="/static/theme/images/cotton.png"/>
+                </div>
+            </div>
+
+            <div class="w-1/2 max-w-4xl bg-blue-100 shadow-[0_1px_2px_rgba(0,0,0,0.5)] rounded-md sticky top-20 flex overflow-hidden">
+                <div class="w-1/3 bg-black/50">
+                    <img class="w-full h-[388px]" src="/static/theme/images/all_weather.png"/>
+                </div>
+                <div class="w-2/3 p-5">
+                    <h2 class="text-2xl font-semibold mb-5">🧢 Czapki i kurtki na każdą pogodę</h2>
+                    <p class="font-medium leading-7">Czapki z daszkiem i zimowe beanie szyte są z oddychających, elastycznych materiałów, które świetnie dopasowują się do kształtu głowy.
+                    Kurtki uczelniane to połączenie funkcjonalności i stylu - lekkie, wodoodporne i wyposażone w wygodne kieszenie.</p>
+                </div>
+            </div>
+
+            <div class="w-1/2 max-w-4xl bg-blue-100 shadow-[0_1px_2px_rgba(0,0,0,0.5)] rounded-md sticky top-20 flex overflow-hidden">
+                <div class="w-2/3 p-5">
+                    <h2 class="text-2xl font-semibold mb-5">☕ Gadżety, które towarzyszą Ci na co dzień</h2>
+                    <p class="font-medium leading-7">Kubki, bidony, torby i breloki z uczelnianym logo to nie tylko akcesoria – to sposób, by codziennie przypominać sobie o wspólnocie, której jesteś częścią.
+                    Wszystkie produkty powstają z dbałością o środowisko – wybieramy materiały z recyklingu oraz nadruki ekologiczne (bez użycia szkodliwych farb).</p>
+                </div>
+                <div class="w-1/3 bg-black/50">
+                    <img class="w-full h-[388px]" src="/static/theme/images/daily_coffe.png"/>
+                </div>
+            </div>
+            
+               <div class="w-1/2 max-w-4xl bg-blue-100 shadow-[0_1px_2px_rgba(0,0,0,0.5)] rounded-md sticky top-20 flex overflow-hidden">
+                <div class="w-1/3 bg-black/50">
+                    <img class="w-full h-[388px]" src="/static/theme/images/student_chores.png"/>
+                </div>
+                <div class="w-2/3 p-5">
+                    <h2 class="text-2xl font-semibold mb-5">📚 Praktyczne dodatki dla każdego studenta</h2>
+                    <p class="font-medium leading-7">Zeszyty, długopisy i notatniki w uczelnianych barwach pomagają zachować porządek w nauce - a przy okazji świetnie wyglądają.</p>
+                </div>
+            </div>
+
+          <div class="w-1/2 max-w-4xl bg-blue-100 shadow-[0_1px_2px_rgba(0,0,0,0.5)] rounded-md sticky top-20 flex overflow-hidden">
+                <div class="w-1/3 bg-black/50">
+                      <img class="w-full h-[388px]" src="/static/theme/images/gift.png"/>
+                </div>
+                <div class="w-2/3 p-5">
+                    <h2 class="text-2xl font-semibold mb-5">🎁 Na prezent i dla siebie</h2>
+                    <p class="font-medium leading-7">Szukasz pamiątki po studiach lub upominku dla znajomego? Nasze produkty to idealny wybór – eleganckie, solidne i pełne ducha akademickiego.</p>
+                </div>
+            </div>
+
+             <div class="w-1/2 max-w-4xl bg-blue-100 shadow-[0_1px_2px_rgba(0,0,0,0.5)] rounded-md sticky top-20 flex overflow-hidden">
+                <div class="w-1/3 bg-black/50 px-5">
+                    <img class="w-full h-[388px]" src="/static/theme/images/graduate.png"/>
+                </div>
+                <div class="w-2/3 p-5">
+                    <h2 class="text-2xl font-semibold mb-5">💡 Postaw na jakość i pokaż swoją przynależność z dumą.</h2>
+                    <p class="font-medium leading-7">Wybierz gadżety uczelni, które zostaną z Tobą na lata – tak jak wspomnienia ze studiów.</p>
+                </div>
+            </div>
+            
+        </div>
+
+        <section class="mt-24 w-full flex flex-col">
+            <h2 
+                class="mx-auto font-extrabold text-3xl uppercase relative px-2 text-[#333]
+                after:absolute after:w-8 after:h-1 after:rounded-md after:bg-[#333] after:block
+                after:top-1/2 after:left-0 after:-translate-x-full after:-translate-y-1/2
+                before:absolute before:w-8 before:h-1 before:rounded-md before:bg-[#333] before:block
+                before:top-1/2 before:right-0 before:translate-x-full before:-translate-y-1/2"
+            >
+                Nowe przedmioty
+            </h2>
+            <div
+                class="bg-blue-100 w-full flex-1 mt-4 px-4 pt-12 pb-24"
+            >
+
+                <div class="grid grid-cols-3 gap-10 place-items-center items-stretch w-fit mx-auto">
+                     {% for item in items %}
+                     <div 
+                        data-product-item
+                        data-name="{{ item.name }}"
+                        data-price="{{ item.price }}"
+                        data-id="{{ item.id }}"
+                        data-image="{{item.image}}"
+                        data-discount="{{item.discount}}"
+                        data-promotion="{{item.promotion}}"
+                        class="flex flex-col group cursor-pointer relative
+                                after:absolute after:inset-0 after:bg-[url('/static/theme/images/backgroundTile.png')]
+                                after:-z-10 z-10 after:bg-cover after:bg-no-repeat bg-white shadow-md
+                                after:bg-bottom after:rounded-b-lg after:brightness-90
+                                p-4 rounded-lg justify-stretch w-[250px] h-[330px]">
+                            {% if item.promotion == 'true' %}
+                                <span 
+                                    class="absolute block bg-black px-2 py-1 left-2 top-2 rounded-full text-gray-100 font-medium"
+                                >
+                                    Promocja
+                                </span>
+                            {% endif %}
+                            <div class="relative flex items-end justify-center 
+                                        mt-10 h-full w-full pb-5
+                                        after:w-[64px]
+                                        after:h-[64px]
+                                        after:transition-all after:duration-[400ms]
+                                        after:absolute after:z-5 after:-bottom-2 after:left-14
+                                        after:bg-[url('/static/theme/images/smile.png')] after:bg-no-repeat after:bg-contain
+                                        after:scale-x-0 after:scale-y-0 after:opacity-0
+                                        group-hover:after:scale-x-100 group-hover:after:scale-y-100 
+                                        group-hover:after:-translate-y-6 group-hover:after:-translate-x-6
+                                        group-hover:after:-rotate-[20deg]
+                                        group-hover:after:opacity-100 after:ease-in"
+                            >
+                                <img src="/static/{{ item.image }}" 
+                                     alt="{{ item.name }}"
+                                     class="w-[100px] z-10 transition-all duration-[400ms] ease-linear
+                                            group-hover:scale-[85%]" 
+                                />
+                                <div class="absolute opacity-0 z-5 group-hover:rotate-12 group-hover:-translate-y-10
+                                            group-hover:translate-x-10 group-hover:opacity-100 transition-all duration-[400ms]
+                                            ease-in scale-x-0 scale-y-0 group-hover:scale-x-100 group-hover:scale-y-100"
+                                >
+                                    <img
+                                        height="64"
+                                        width="64" 
+                                        src="/static/theme/images/heart.png"
+                                    />
+                                </div>
+                            </div>
+                            <div class="w-full mt-3">
+                                <span 
+                                    class="px-4 py-1 bg-zinc-300 text-gray-800 block rounded-full w-full font-bold shadow-md
+                                        whitespace-nowrap text-nowrap truncate"
+                                >
+                                    {{item.name}}
+                                </span>
+                            </div>
+                            <div class="mt-5 flex items-center w-full relative">
+                                <button
+                                    onclick="addProductToBasket(event)" 
+                                    class="bg-black hover:bg-slate-800 text-gray-100 p-2 rounded-full relative group/add">
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        width="24" height="24" 
+                                        viewBox="0 0 24 24" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        stroke-width="2" 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round" 
+                                        class="lucide pointer-events-none lucide-shopping-cart-icon lucide-shopping-cart"
+                                    >
+                                        <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+                                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                                    </svg>
+                                    <div 
+                                        class="absolute bottom-[6px] right-[6px] bg-black group-hover/add:bg-slate-800 rounded-full"
+                                    >
+                                        <svg 
+                                            xmlns="http://www.w3.org/2000/svg" 
+                                            width="16" height="16" 
+                                            viewBox="0 0 20 20" 
+                                            fill="none" 
+                                            stroke="currentColor" 
+                                            stroke-width="2" 
+                                            stroke-linecap="round" 
+                                            stroke-linejoin="round" 
+                                            class="
+                                                lucide pointer-events-none lucide-plus-icon lucide-plus"
+                                    >
+                                        <path d="M5 12h14"/><path d="M12 5v14"/>
+                                    </svg>
+                                    </div>
+                                </button>
+                                <div
+                                    class="text-lg font-medium bg-black pr-5 pl-2 rounded-md text-gray-100
+                                    absolute -right-9 min-w-[80px]"
+                                    style="clip-path: polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%);"
+                                >
+                                    <div 
+                                    >   
+                                        {% if item.promotion == 'true' %}
+                                            <span>
+                                                {{item.discountedPrice}} zł
+                                            </span>
+                                        {% endif %}
+                                        <span class="{% if item.promotion == 'true' %} line-through text-sm text-red-400 {% else %} bg-black {% endif %}">
+                                            {{item.price}} zł
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                {% endfor %}
+                </div>
+               
+            </div>
+        </section>
+    </main>
+
+{% endblock %}
