@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% if category %}{{ category.name }}{% else %}{% trans "Katalog" %}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6 text-center">
+        {% if category %}{{ category.name }}{% else %}{% trans "Przeglądaj Kategorie" %}{% endif %}
+    </h1>
+    
+    {% if categories %}
+    
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+            {% for child in categories %}
+                <a href="{{ child.get_absolute_url }}" class="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200 p-6 text-center border border-gray-200 hover:bg-blue-50">
+                    <span class="text-xl font-semibold text-blue-700">{{ child.name }}</span>
+                    {% if child.description %}
+                        <p class="text-gray-500 mt-2 text-sm">{{ child.description|truncatewords:15 }}</p>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if page_obj.object_list %}
+        <h2 class="text-2xl font-bold mt-8 mb-4">{% trans "Produkty" %}</h2>
+        {# Używamy Twojego dynamicznego product_list.html, który zaimportuje poprawny widok #}
+        {% include "oscar/catalogue/partials/product_list.html" with page_obj=page_obj %}
+    {% endif %}
+
+    {% if not categories and not page_obj.object_list %}
+         <p class="text-center text-gray-400">Brak kategorii lub produktów do wyświetlenia.</p>
+    {% endif %}
+</div>
+{% endblock %}

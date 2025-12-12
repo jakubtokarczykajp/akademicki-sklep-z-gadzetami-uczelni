@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load product_filters %}
+{% load currency_filters %}
+
+{% block title %}{{ product.title }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-10 px-4">
+    <div class="bg-white p-8 rounded-lg shadow-xl">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            
+            <div>
+                <h1 class="text-3xl font-bold mb-4 text-gray-800 lg:hidden">{{ product.title }}</h1>
+                <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                    {% if product.primary_image %}
+                        <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="max-h-full max-w-full object-contain">
+                    {% else %}
+                        <div class="text-gray-500">{% trans "Brak obrazu" %}</div>
+                    {% endif %}
+                </div>
+            
+            </div>
+            
+            <div>
+                <h1 class="text-3xl font-bold mb-4 text-gray-800 hidden lg:block">{{ product.title }}</h1>
+                
+                <div class="mb-6">
+                    {% with price=product.get_base_price %}
+                        {% if price and price.incl_tax %}
+                            <p class="text-4xl font-extrabold text-blue-600">
+                                {{ price.incl_tax|currency }}
+                            </p>
+                        {% else %}
+                            <p class="text-xl text-red-500">{% trans "Cena niedostępna" %}</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                {% if product.is_parent %}
+                
+                    <div class="mb-6">
+                        <p class="text-lg font-semibold text-gray-700 mb-2">{% trans "Wybierz wariant (np. rozmiar)" %}:</p>
+                
+                        {% include "oscar/catalogue/partials/add_to_basket_form_variants.html" %}
+                    </div>
+                {% else %}
+                    {# Prosty produkt (Kubek) #}
+                    <form action="{% url 'basket:add' product.pk %}" method="post" class="space-y-4">
+                        {% csrf_token %}
+                        <div class="flex items-center space-x-4">
+                            <label for="id_quantity" class="font-medium">{% trans "Ilość" %}:</label>
+                            <input type="number" name="quantity" value="1" min="1" id="id_quantity" 
+                                   class="w-20 border border-gray-300 rounded-md py-2 text-center shadow-sm" />
+                        </div>
+                        <button type="submit" class="w-full py-3 px-4 shadow-md text-lg font-medium rounded-md text-white bg-green-500 hover:bg-green-600 transition-colors duration-200">
+                            {% trans "Dodaj do koszyka" %}
+                        </button>
+                    </form>
+                {% endif %}
+                
+                <hr class="my-8">
+
+                <h2 class="text-2xl font-semibold mb-3 text-gray-700">{% trans "Opis Produktu" %}</h2>
+                <div class="prose max-w-none text-gray-600">
+                    {{ product.description|linebreaks }}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="mt-10">
+        {% include "oscar/catalogue/partials/product_details.html" %}
+    </div>
+
+</div>
+{% endblock %}

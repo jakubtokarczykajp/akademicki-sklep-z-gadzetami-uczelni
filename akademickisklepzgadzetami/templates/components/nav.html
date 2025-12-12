@@ -34,7 +34,66 @@
                     />
                 </label>
                 <div class="flex items-center gap-5">
-                    <button
+
+            
+                    {% if user.is_authenticated %}
+                        {# Użytkownik jest ZALOGOWANY: Pokaż link do Profilu #}
+                        <a href="{% url 'customer:summary' %}"
+                        class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
+                        rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
+                        before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
+                        before:transition-transform before:duration-200 before:ease-linear hover:text-white
+                        flex items-center gap-1">
+                            
+                            {# Wyświetlamy nazwę użytkownika lub "Mój Profil" #}
+                            {{ user.username|default:"Mój Profil" }}
+                            
+                            <svg 
+                                xmlns="http://www.w3.org/2000/svg" 
+                                width="24" height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" 
+                                class="lucide lucide-user-icon lucide-user"
+                            >
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </a>
+                    {% else %}
+                        {# Użytkownik jest WYLOGOWANY: Pokaż link do Logowania #}
+                        <a href="{% url 'customer:login' %}"
+                        class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
+                        rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
+                        before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
+                        before:transition-transform before:duration-200 before:ease-linear hover:text-white
+                        flex items-center gap-1">
+                            
+                            Zaloguj się
+                            
+                            <svg 
+                                xmlns="http://www.w3.org/2000/svg" 
+                                width="24" height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" 
+                                class="lucide lucide-user-icon lucide-user"
+                            >
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </a>
+                    {% endif %}
+
+
+
+                    <!-- <button
                     class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
                     rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
                     before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
@@ -56,7 +115,7 @@
                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
-                </button>
+                </button> -->
                 <div class="relative group">
                     <button
                     onclick="openBasket()"
