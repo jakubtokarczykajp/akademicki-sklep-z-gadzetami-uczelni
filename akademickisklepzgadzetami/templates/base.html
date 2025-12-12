@@ -1,16 +1,23 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Akademicki Sklep{% endblock %}</title>
-    <link href="/static/css/output.css" rel="stylesheet">
+    
+    {# Używamy poprawnych, dynamicznych tagów Django dla statycznych plików #}
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen">
+    
     {% include 'components/nav.html' %}
     <main>
         {% block content %}{% endblock %}
     </main>
     {% include 'components/footer.html' %}
+    
+    {# Dodajemy skrypt JS z mastera, który był w konflikcie #}
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

@@ -1,0 +1,39 @@
+name: Deploy pythonanywhere webapp
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: deployment
+    env:
+      PA_HOST: ${{ secrets.PYTHONANYWHERE_HOST }}
+      PA_USERNAME: ${{ secrets.PYTHONANYWHERE_USERNAME }}
+      PA_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+      PA_DOMAIN: ${{ secrets.PYTHONANYWHERE_DOMAIN }}
+      VENV_NAME: ${{ vars.VENV_NAME }}
+      PROJECT_NAME: ${{ vars.PROJECT_NAME }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Re-Deploy Pythonanywhere Django API
+        uses: umuttopalak/pythonanywhere-deploy-action@v1.1.0
+        with:
+          host: ${{ env.PA_HOST }}
+          username: ${{ env.PA_USERNAME }}
+          api_token: ${{ env.PA_TOKEN }}
+          domain_name: ${{ env.PA_DOMAIN }}
+
+      - name: Run collectstatic via API
+        run: |
+          curl -X POST "https://$PA_HOST/api/v0/user/$PA_USERNAME/consoles/" \
+          -H "Authorization: Token $PA_TOKEN" \
+          -d "executable=bash" \
+          -d "command=source /home/$PA_USERNAME/.virtualenvs/$VENV_NAME/bin/activate && cd /home/$PA_USERNAME/$PROJECT_NAME && python manage.py collectstatic --noinput" \
+          --fail

@@ -34,7 +34,6 @@ dist/
 db.sqlite3
 media/
 staticfiles/
-static/
 
 # --- Unit test / coverage reports ---
 htmlcov/
