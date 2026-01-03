@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+import sys
 
 from oscar.defaults import *
 from pathlib import Path
@@ -103,13 +104,20 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://127.0.0.1:8983/solr',
-        'INCLUDE_SPELLING': True,
-    },
-}
+if 'test' in sys.argv:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+        }
+    }
+else:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+            'URL': 'http://127.0.0.1:8983/solr',
+            'INCLUDE_SPELLING': True,
+        },
+    }
 
 ROOT_URLCONF = 'akademickisklepzgadzetami.urls'
 
