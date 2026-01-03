@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from oscar.defaults import *
+import os
 from pathlib import Path
+from oscar.defaults import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-7!bkzra43#r(6mx2y2nw@zh%a%+ax3z=xrg#(5rk5i6-rz3q_7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["jakubtokarczyk00.pythonanywhere.com"]
+ALLOWED_HOSTS = ['jakubtokarczyk00.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -198,3 +199,6 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
