@@ -30,9 +30,6 @@ dist/
 *.pyc
 *.pyo
 *.pyd
-*.sqlite3
-db.sqlite3
-media/
 staticfiles/
 
 # --- Unit test / coverage reports ---
