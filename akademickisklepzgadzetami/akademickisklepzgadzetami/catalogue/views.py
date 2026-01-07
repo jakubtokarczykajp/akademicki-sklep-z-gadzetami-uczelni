@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from django.conf import settings
-from oscar.core.loading import get_model
 from oscar.apps.partner.strategy import Selector
+from oscar.core.loading import get_model
 
 Product = get_model('catalogue', 'Product')
-
 
 def home(request):
     # 1. POBIERANIE Z BAZY

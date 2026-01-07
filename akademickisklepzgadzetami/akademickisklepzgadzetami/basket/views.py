@@ -1,5 +1,46 @@
 ﻿from django.http import JsonResponse
 from oscar.apps.basket.views import BasketView as CoreBasketView
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from oscar.core.loading import get_model
+
+Line = get_model('basket', 'Line')
+
+@require_POST
+def update_line_quantity_api(request):
+    """
+    Prosty endpoint API do aktualizacji ilości w linii koszyka.
+    """
+    line_id = request.POST.get('line_id')
+    quantity = request.POST.get('quantity')
+
+    if not line_id or not quantity:
+        return JsonResponse({'status': 'error', 'message': 'Brak danych'}, status=400)
+
+    try:
+        # Pobieramy linię należącą do obecnego koszyka (ważne dla bezpieczeństwa!)
+        line = request.basket.lines.get(id=line_id)
+
+        # Konwersja na int
+        qty = int(quantity)
+
+        # Oscarowa metoda do aktualizacji ilości (obsługuje logikę magazynową)
+        request.basket.update_line(line, qty)
+
+        # Zwracamy nowe dane, żeby zaktualizować frontend
+        return JsonResponse({
+            'status': 'ok',
+            'line_id': line.id,
+            'new_quantity': line.quantity,
+            'line_price': str(line.line_price_incl_tax),  # lub excl_tax zależnie od ustawień
+            'basket_total': str(request.basket.total_incl_tax)
+        })
+    except Line.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Linia nie znaleziona'}, status=404)
+    except ValueError:
+        return JsonResponse({'status': 'error', 'message': 'Nieprawidłowa ilość'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 class BasketSummaryView(CoreBasketView):
     def render_to_response(self, context, **response_kwargs):

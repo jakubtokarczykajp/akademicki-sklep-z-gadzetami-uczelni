@@ -21,6 +21,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.conf.urls.static import static
 from akademickisklepzgadzetami.catalogue import views
+from akademickisklepzgadzetami.basket import views as basket_views
 
 DEBUG = settings.DEBUG
 
@@ -39,6 +40,8 @@ urlpatterns = [
 
     # Sklep Oscar (musi być na końcu listy, bo przejmuje wiele adresów)
     path('shop/', include(apps.get_app_config('oscar').urls[0])),
+
+    path('api/basket/update-line/',  basket_views.update_line_quantity_api, name='api-basket-update-line'),
 ]
 
 if settings.DEBUG:
