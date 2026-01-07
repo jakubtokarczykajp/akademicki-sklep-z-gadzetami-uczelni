@@ -117,11 +117,9 @@ HAYSTACK_CONNECTIONS = {
 
 OSCAR_SEARCH_FACETS: dict[str, dict[str, dict[str, str]] | dict[str, dict[str, str | list[tuple[str, str]]]]] = {
     'fields': {
-        'product_class': {'name': 'Kategoria / Typ', 'field': 'product_class'},
+        'product_class': {'name': 'Typ', 'field': 'product_class'},
 
-        'rating': {'name': 'Ocena', 'field': 'rating'},
-
-        'upc': {'name': 'Kod produktu', 'field': 'upc'},
+        'price': {'name': 'Cena', 'field': 'price'},
     },
     'queries': {
         'price_range': {
@@ -215,7 +213,7 @@ USE_TZ = True
 OSCAR_DEFAULT_COUNTRY = 'PL'
 OSCAR_DEFAULT_CURRENCY = 'PLN'
 
-OSCAR_PRODUCTS_PER_PAGE = 2
+OSCAR_PRODUCTS_PER_PAGE = 5
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
