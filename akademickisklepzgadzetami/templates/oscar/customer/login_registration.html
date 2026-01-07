@@ -1,4 +1,4 @@
-{% extends "oscar/layout.html" %}
+{% extends "base.html" %}
 {% load i18n %}
 {% load widget_tweaks %}
 
@@ -6,118 +6,102 @@
     {% trans "Log in or register" %} | {{ shop_name }}
 {% endblock %}
 
-{% block breadcrumbs %}
-{% endblock %}
-
-{% block header %}
-{% endblock %}
-
 {% block content %}
-<div class="min-h-[70vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-white">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
-        <h2 class="text-3xl font-extrabold text-gray-900">
-            {% trans "Welcome" %}
-        </h2>
-        <p class="mt-2 text-sm text-gray-600">
-            {% trans "Please login or create an account to continue." %}
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-black text-[#333] uppercase mb-4">
+            {% trans "Witaj w sklepie" %}
+        </h1>
+        <p class="text-gray-500 text-lg">
+            {% trans "Zaloguj się, aby uzyskać dostęp do swojego konta lub zarejestruj się, jeśli jesteś tu po raz pierwszy." %}
         </p>
     </div>
 
-    <div class="sm:mx-auto sm:w-full sm:max-w-5xl">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 sm:px-0">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        {# LOGIN CARD #}
+        <div class="bg-white p-8 rounded-[2rem] shadow-xl border border-gray-100 relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-2 h-full bg-[#015F8A]"></div>
             
-            <div class="bg-white py-8 px-4 shadow sm:rounded-2xl sm:px-10 border border-gray-100 relative overflow-hidden group hover:border-blue-200 transition-all">
-                <div class="absolute top-0 left-0 w-1 h-full bg-[#015F8A] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#015F8A]"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+                    {% trans "Log In" %}
+                </h2>
+                <p class="text-gray-400 text-sm mt-1">{% trans "Masz już konto? Zaloguj się tutaj." %}</p>
+            </div>
+
+            <form class="space-y-5" action="{% url 'customer:login' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}" />
                 
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold text-gray-900">{% trans "Log In" %}</h3>
-                    <p class="text-xs text-gray-500">{% trans "Access your account" %}</p>
+                {% if login_form.non_field_errors %}
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                        {{ login_form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in login_form.visible_fields %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-1 ml-1">
+                            {{ field.label }}
+                        </label>
+                        {% render_field field class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#015F8A] focus:ring-2 focus:ring-[#015F8A]/20 outline-none transition-all bg-gray-50 focus:bg-white" placeholder=field.label %}
+                        {% if field.errors %}
+                            <p class="mt-1 text-sm text-red-500 ml-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="pt-4">
+                    <button type="submit" name="login_submit" class="w-full bg-[#015F8A] hover:bg-[#014f70] text-white font-bold py-4 px-6 rounded-xl transition-all transform active:scale-[0.98] shadow-lg shadow-blue-500/20 flex justify-center items-center gap-2">
+                        <span>{% trans "Zaloguj się" %}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </button>
                 </div>
+            </form>
+        </div>
 
-                <form class="space-y-6" action="{% url 'customer:login' %}" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next }}" />
-                    
-                    {% if login_form.non_field_errors %}
-                        <div class="rounded-md bg-red-50 p-3">
-                            <div class="text-sm font-medium text-red-800">
-                                {{ login_form.non_field_errors }}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% for field in login_form.visible_fields %}
-                        <div class="mb-4">
-                            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
-                                {{ field.label }}
-                            </label>
-                            <div class="mt-1">
-                                {% render_field field class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#015F8A] focus:border-[#015F8A] sm:text-sm transition-colors" autocomplete=field.name %}
-                            </div>
-                            {% if field.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ field.errors.0 }}</p>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm">
-                            <a href="{% url 'customer:password-reset' %}" class="font-medium text-[#015F8A] hover:text-blue-600">
-                                {% trans "Forgot your password?" %}
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="pt-2">
-                        <button type="submit" name="login_submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-[#015F8A] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#015F8A] transition-colors">
-                            {% trans "Log In" %}
-                        </button>
-                    </div>
-                </form>
+        {# REGISTER CARD #}
+        <div class="bg-gray-50 p-8 rounded-[2rem] border border-gray-200 shadow-inner">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" x2="20" y1="8" y2="14"/><line x1="23" x2="17" y1="11" y2="11"/></svg>
+                    {% trans "Register" %}
+                </h2>
+                <p class="text-gray-500 text-sm mt-1">{% trans "Nie masz konta? Załóż je w kilka chwil." %}</p>
             </div>
 
-            <div class="bg-gray-50 py-8 px-4 shadow-inner sm:rounded-2xl sm:px-10 border border-gray-200">
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold text-gray-900">{% trans "Register" %}</h3>
-                    <p class="text-xs text-gray-500">{% trans "Create a new account" %}</p>
-                </div>
-
-                <form class="space-y-6" action="{% url 'customer:login' %}" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next }}" />
-                    
-                    {% if registration_form.non_field_errors %}
-                        <div class="rounded-md bg-red-50 p-3">
-                            <div class="text-sm font-medium text-red-800">
-                                {{ registration_form.non_field_errors }}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% for field in registration_form.visible_fields %}
-                        <div class="mb-4">
-                            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
-                                {{ field.label }}
-                            </label>
-                            <div class="mt-1">
-                                {% render_field field class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#015F8A] focus:border-[#015F8A] sm:text-sm transition-colors" autocomplete=field.name %}
-                            </div>
-                            {% if field.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ field.errors.0 }}</p>
-                            {% endif %}
-                            {% if field.help_text %}
-                                <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-
-                    <div class="pt-2">
-                        <button type="submit" name="registration_submit" class="w-full flex justify-center py-3 px-4 border-2 border-[#015F8A] rounded-xl shadow-sm text-sm font-bold text-[#015F8A] bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#015F8A] transition-colors">
-                            {% trans "Register" %}
-                        </button>
+            <form class="space-y-5" action="{% url 'customer:login' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}" />
+                
+                {% if registration_form.non_field_errors %}
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                        {{ registration_form.non_field_errors }}
                     </div>
-                </form>
-            </div>
+                {% endif %}
+
+                {% for field in registration_form.visible_fields %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-1 ml-1">
+                            {{ field.label }}
+                        </label>
+                        {% render_field field class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#015F8A] focus:ring-2 focus:ring-[#015F8A]/20 outline-none transition-all bg-white" placeholder=field.label %}
+                        {% if field.errors %}
+                            <p class="mt-1 text-sm text-red-500 ml-1">{{ field.errors.0 }}</p>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <p class="mt-1 text-xs text-gray-400 ml-1">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="pt-4">
+                    <button type="submit" name="registration_submit" class="w-full bg-white hover:bg-gray-100 text-[#015F8A] border-2 border-[#015F8A] font-bold py-4 px-6 rounded-xl transition-all transform active:scale-[0.98] flex justify-center items-center gap-2">
+                        <span>{% trans "Zarejestruj się" %}</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
