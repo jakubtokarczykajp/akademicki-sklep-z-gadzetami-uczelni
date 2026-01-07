@@ -1,0 +1,57 @@
+from django.shortcuts import render
+from django.conf import settings
+from oscar.core.loading import get_model
+from oscar.apps.partner.strategy import Selector
+
+Product = get_model('catalogue', 'Product')
+
+
+def home(request):
+    # 1. POBIERANIE Z BAZY
+    db_products = Product.objects.filter(is_public=True).prefetch_related(
+        'images',
+        'stockrecords'
+    ).order_by('-date_created')[:8]
+
+    # Inicjalizacja strategii cenowej (niezbędne w Oscarze do poprawnych cen)
+    strategy = Selector().strategy(request=request, user=request.user)
+
+    items = []
+
+    for product in db_products:
+        # A. Obliczanie ceny i dostępności za pomocą strategii Oscara
+        info = strategy.fetch_for_product(product)
+        price_val = '0'
+
+        if info.price.is_tax_known:
+            price_val = str(info.price.incl_tax)
+        else:
+            price_val = str(info.price.excl_tax)
+
+        # B. Wyciąganie zdjęcia
+        # Jeśli produkt ma zdjęcie -> URL z media (np. /media/images/...)
+        # Jeśli nie -> URL ze static (np. /static/theme/images/...)
+        img_obj = product.primary_image()
+
+        if img_obj and img_obj.original:
+            image_url = img_obj.original.url
+        else:
+            # Budujemy pełną ścieżkę statyczną
+            image_url = settings.STATIC_URL + 'theme/images/placeholder.png'
+
+        # C. Budowanie słownika
+        item = {
+            "id": str(product.id),
+            "name": product.title,
+            "image": image_url,  # To teraz jest pełny URL (static lub media)
+            "price": price_val,
+
+            # W Oscarze promocje są bardziej złożone (Offers), tu upraszczamy:
+            "promotion": 'false',
+            "discount": '0',
+            "discountedPrice": price_val
+        }
+
+        items.append(item)
+
+    return render(request, 'home.html', {'items': items})

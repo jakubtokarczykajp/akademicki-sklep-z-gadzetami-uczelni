@@ -1,80 +1,106 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load static %}
-{% load product_filters %}
 {% load currency_filters %}
+{% load product_tags %}
 
 {% block title %}{{ product.title }} | {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto py-10 px-4">
-    <div class="bg-white p-8 rounded-lg shadow-xl">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            
-            <div>
-                <h1 class="text-3xl font-bold mb-4 text-gray-800 lg:hidden">{{ product.title }}</h1>
-                <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-                    {% if product.primary_image %}
-                        <img src="{{ product.primary_image.url }}" alt="{{ product.title }}" class="max-h-full max-w-full object-contain">
-                    {% else %}
-                        <div class="text-gray-500">{% trans "Brak obrazu" %}</div>
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+
+                {# LEWA KOLUMNA - ZDJĘCIE #}
+                <div class="p-8 bg-white flex items-center justify-center border-b lg:border-b-0 lg:border-r border-gray-100 relative">
+                    {% if product.promotion == 'true' %}
+                        <span class="absolute top-6 left-6 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg transform -rotate-2">
+                            Promocja
+                        </span>
                     {% endif %}
-                </div>
-            
-            </div>
-            
-            <div>
-                <h1 class="text-3xl font-bold mb-4 text-gray-800 hidden lg:block">{{ product.title }}</h1>
-                
-                <div class="mb-6">
-                    {% with price=product.get_base_price %}
-                        {% if price and price.incl_tax %}
-                            <p class="text-4xl font-extrabold text-blue-600">
-                                {{ price.incl_tax|currency }}
-                            </p>
+
+                    <div class="w-full max-w-md aspect-square relative group">
+                <div class="w-full aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        {% if product.primary_image %}
+                            <img src="{{ product.primary_image.original.url }}"
+                                 alt="{{ product.title }}"
+                                 class="max-h-full max-w-full object-contain">
                         {% else %}
-                            <p class="text-xl text-red-500">{% trans "Cena niedostępna" %}</p>
+                            <img src="{% static 'theme/images/placeholder.png' %}" alt="Brak zdjęcia" class="relative z-10 w-full h-full object-contain opacity-50">
                         {% endif %}
-                    {% endwith %}
+                    </div>
                 </div>
 
-                {% if product.is_parent %}
-                
-                    <div class="mb-6">
-                        <p class="text-lg font-semibold text-gray-700 mb-2">{% trans "Wybierz wariant (np. rozmiar)" %}:</p>
-                
-                        {% include "oscar/catalogue/partials/add_to_basket_form_variants.html" %}
-                    </div>
-                {% else %}
-                    {# Prosty produkt (Kubek) #}
-                    <form action="{% url 'basket:add' product.pk %}" method="post" class="space-y-4">
-                        {% csrf_token %}
-                        <div class="flex items-center space-x-4">
-                            <label for="id_quantity" class="font-medium">{% trans "Ilość" %}:</label>
-                            <input type="number" name="quantity" value="1" min="1" id="id_quantity" 
-                                   class="w-20 border border-gray-300 rounded-md py-2 text-center shadow-sm" />
-                        </div>
-                        <button type="submit" class="w-full py-3 px-4 shadow-md text-lg font-medium rounded-md text-white bg-green-500 hover:bg-green-600 transition-colors duration-200">
-                            {% trans "Dodaj do koszyka" %}
-                        </button>
-                    </form>
-                {% endif %}
-                
-                <hr class="my-8">
+                {# PRAWA KOLUMNA - DANE #}
+                <div class="p-8 lg:p-12 flex flex-col">
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
+                        {{ product.title }}
+                    </h1>
 
-                <h2 class="text-2xl font-semibold mb-3 text-gray-700">{% trans "Opis Produktu" %}</h2>
-                <div class="prose max-w-none text-gray-600">
-                    {{ product.description|linebreaks }}
+                    <div class="flex items-center mb-6">
+                        <div class="flex text-yellow-400">
+                            {% for i in "12345" %}
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            {% endfor %}
+                        </div>
+                        <span class="text-gray-400 text-sm ml-2">(Bestseller)</span>
+                    </div>
+
+                    <div class="mb-8">
+                        {% with price=product.get_base_price %}
+                            {% if price and price.incl_tax %}
+                                <div class="flex items-baseline gap-4">
+                                    <span class="text-5xl font-black text-[#015F8A]">
+                                        {{ price.incl_tax|currency }}
+                                    </span>
+                                    {% if price.is_tax_known %}
+                                        <span class="text-sm text-gray-400">brutto</span>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <span class="text-2xl text-red-500 font-bold">Niedostępny</span>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+                    <div class="prose prose-blue text-gray-600 mb-8 leading-relaxed">
+                        {{ product.description|default:"Brak opisu produktu."|linebreaks }}
+                    </div>
+
+                    <div class="mt-auto pt-8 border-t border-gray-100">
+                        {# Formularz dodawania do koszyka - WAŻNE: Dodano data-product-form #}
+                        <form id="add_to_basket_form" action="{% url 'basket:add' pk=product.id %}" method="post" class="flex flex-col sm:flex-row gap-4">
+                            {% csrf_token %}
+
+                            {% if product.is_parent %}
+                                {% include "oscar/catalogue/partials/add_to_basket_form_variants.html" %}
+                            {% else %}
+                                <div class="w-32">
+                                    <label for="id_quantity" class="sr-only">Ilość</label>
+                                    <div class="relative rounded-md shadow-sm">
+                                        <input type="number" name="quantity" id="id_quantity" value="1" min="1"
+                                               class="focus:ring-blue-500 focus:border-blue-500 block w-full text-center sm:text-sm border-gray-300 rounded-lg py-3 font-bold" placeholder="1">
+                                    </div>
+                                </div>
+                                <button type="submit"
+                                        class="flex-1 bg-[#015F8A] border border-transparent rounded-lg py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-[#014f70] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-lg shadow-blue-500/30 transition-all duration-200 transform hover:-translate-y-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    Dodaj do koszyka
+                                </button>
+                            {% endif %}
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-        
-    </div>
-    
-    <div class="mt-10">
-        {% include "oscar/catalogue/partials/product_details.html" %}
-    </div>
 
+        {# Sekcja szczegółów #}
+        <div class="mt-12">
+            {% include "oscar/catalogue/partials/product_details.html" %}
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,217 +1,125 @@
-   {% load static %}
-   <nav class="flex flex-col">
-        <div class="bg-blue-100 text-white p-4">
-            <div class="flex items-center w-2/3 max-w-7xl justify-around mx-auto">
-                <div class="flex items-center text-[#015F8A] font-bold">
-                    <img width="80" src="{% static 'theme/images/ajp_logo.png'%}" alt="Logo">
-                    <div class="flex flex-col text-center">
-                        <h2 class="text-xl uppercase font-black leading-5">Akademia</h2>
-                        <span class="text-xl font-black uppercase leading-5">im. Jakuba </br> z Paradyża</span>
-                    </div>
+{% load static %}
+{% load category_tags %}
+{% load i18n %}
+
+<nav class="flex flex-col">
+    <div class="bg-blue-100 text-white p-4">
+        <div class="flex items-center w-2/3 max-w-7xl justify-around mx-auto">
+            <a href="{% url 'home' %}" class="flex items-center text-[#015F8A] font-bold cursor-pointer">
+                <img width="80" src="{% static 'theme/images/ajp_logo.png'%}" alt="Logo">
+                <div class="flex flex-col text-center">
+                    <h2 class="text-xl uppercase font-black leading-5">Akademia</h2>
+                    <span class="text-xl font-black uppercase leading-5">im. Jakuba </br> z Paradyża</span>
                 </div>
-                <label
-                    for="search-input" 
-                    class="text-black flex gap-1 items-center bg-white rounded-full px-2 h-11 w-80
-                    focus-within:outline focus-within:outline-1 focus-within:outline-[#015F8A]">
-                    <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="24" height="24" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        stroke-width="2" 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round" 
-                        class="lucide lucide-search-icon lucide-search"
-                    >
+            </a>
+
+            {# Formularz wyszukiwania #}
+            <form method="get" action="{% url 'search:search' %}"
+                  class="text-black flex gap-1 items-center bg-white rounded-full px-2 h-11 w-80 focus-within:outline focus-within:outline-1 focus-within:outline-[#015F8A]">
+                <button type="submit" class="p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search">
                         <path d="m21 21-4.34-4.34"/>
                         <circle cx="11" cy="11" r="8"/>
                     </svg>
-                    <input 
-                        id="search-input"
-                        class="text-black focus:outline-none w-full text-sm font-medium" 
-                        type="text"
-                    />
-                </label>
-                <div class="flex items-center gap-5">
-
-            
-                    {% if user.is_authenticated %}
-                        {# Użytkownik jest ZALOGOWANY: Pokaż link do Profilu #}
-                        <a href="{% url 'customer:summary' %}"
-                        class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
-                        rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
-                        before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
-                        before:transition-transform before:duration-200 before:ease-linear hover:text-white
-                        flex items-center gap-1">
-                            
-                            {# Wyświetlamy nazwę użytkownika lub "Mój Profil" #}
-                            {{ user.username|default:"Mój Profil" }}
-                            
-                            <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                width="24" height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round" 
-                                class="lucide lucide-user-icon lucide-user"
-                            >
-                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                        </a>
-                    {% else %}
-                        {# Użytkownik jest WYLOGOWANY: Pokaż link do Logowania #}
-                        <a href="{% url 'customer:login' %}"
-                        class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
-                        rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
-                        before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
-                        before:transition-transform before:duration-200 before:ease-linear hover:text-white
-                        flex items-center gap-1">
-                            
-                            Zaloguj się
-                            
-                            <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                width="24" height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round" 
-                                class="lucide lucide-user-icon lucide-user"
-                            >
-                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                        </a>
-                    {% endif %}
-
-
-
-                    <!-- <button
-                    class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
-                    rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
-                    before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
-                    before:transition-transform before:duration-200 before:ease-linear hover:text-white
-                    flex items-center gap-1"
-                >
-                    Zaloguj się
-                    <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="24" height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round" 
-                        class="lucide lucide-user-icon lucide-user"
-                    >
-                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                </button> -->
-                <div class="relative group">
-                    <button
-                    onclick="openBasket()"
-                    class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
-                    rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
-                    before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
-                    before:transition-transform before:duration-200 before:ease-linear hover:text-white
-                    flex gap-1"
-                >
-                    Koszyk
-                    <svg 
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-shopping-cart-icon lucide-shopping-cart"
-                    >
-                        <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
-                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
-                    </svg>
                 </button>
-                <span
-                    data-basket-counter 
-                    class="absolute bg-[#015F8A] w-6 h-6 items-center justify-center rounded-full top-0
-                            right-0 -translate-y-1/2 z-10 font-medium group-hover:bg-[#333] transition-colors
-                            duration-200 ease-linear hidden"
-                >
-                    0
-                </span>
-                </div> 
+                <input name="q" class="text-black focus:outline-none w-full text-sm font-medium" type="text" placeholder="{% trans 'Szukaj...' %}" value="{{ request.GET.q }}"/>
+            </form>
+
+            <div class="flex items-center gap-5">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'customer:summary' %}"
+                    class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
+                    rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
+                    before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
+                    before:transition-transform before:duration-200 before:ease-linear hover:text-white
+                    flex items-center gap-1">
+                        {{ user.username|default:"Mój Profil" }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </a>
+                {% else %}
+                    <a href="{% url 'customer:login' %}"
+                    class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
+                    rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
+                    before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
+                    before:transition-transform before:duration-200 before:ease-linear hover:text-white
+                    flex items-center gap-1">
+                        Zaloguj się
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </a>
+                {% endif %}
+
+                <div class="relative group">
+                    <button onclick="openBasket()"
+                    class="outline-[#015F8A] outline-1 text-black px-3 py-2 transition-all ease-linear
+                    rounded-full font-medium relative before:absolute before:bg-[#015F8A] z-10 duration-200 outline
+                    before:inset-0 before:-z-10 before:scale-x-0 hover:before:scale-x-100 before:rounded-full
+                    before:transition-transform before:duration-200 before:ease-linear hover:text-white
+                    flex gap-1">
+                        Koszyk
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon lucide-shopping-cart">
+                            <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                        </svg>
+                    </button>
+                    {# Licznik koszyka z backendu - wymagałby dodatkowego context processora lub ajaxa, na razie ukryty/statyczny #}
+                    <span data-basket-counter class="absolute bg-[#015F8A] w-6 h-6 items-center justify-center rounded-full top-0 right-0 -translate-y-1/2 z-10 font-medium group-hover:bg-[#333] transition-colors duration-200 ease-linear hidden">
+                        0
+                    </span>
                 </div>
             </div>
         </div>
-        <div class="bg-[#333] flex z-50">
-            <ul class="flex gap-5 mx-auto font-medium">
-                <li class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10 
-                    after:absolute after:inset-0 after:-z-10 hover:after:bg-[#DBEAFE]/30
-                    after:rounded-full flex items-center gap-1 my-3 group">
-                        Gadżety
-                            <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="16" height="16" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        stroke-width="2" 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round" 
-                        class="lucide lucide-chevron-down-icon lucide-chevron-down transition-transform duration-200 ease-linear
-                         group-hover:-scale-100"
-                    >
-                        <path d="m6 9 6 6 6-6"/>
-                    </svg>
-                    <div class="absolute translate-y-[100%] bottom-0 pt-2 left-0">
-                         <div class="bg-[#1c1c1c] rounded-md min-w-36 grid
-                                grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-200 ease-linear
-                                z-50"
-                    >
-                        <div class="overflow-hidden">
-                            <ul class="p-1 text-white">
-                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer">Kubki</li>
-                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer">Torby</li>
-                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer">Notesy</li>
-                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer">Długopisy</li>
-                            </ul>
-                        </div>
-                      
-                    </div>
-                    </div>
-                </li>
-                 <li 
-                    class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10 
-                    after:absolute after:inset-0 after:hover:bg-[#DBEAFE]/30 after:-z-10
-                    after:rounded-full my-3"
-                >
-                    Bluzy
-                </li>
-                 <li 
-                    class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10 
-                    after:absolute after:inset-0 after:hover:bg-[#DBEAFE]/30 after:-z-10
-                    after:rounded-full my-3"
-                >
-                    Koszulki
-                </li>
-                <li 
-                    class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10 
-                    after:absolute after:inset-0 after:hover:bg-[#DBEAFE]/30 after:-z-10
-                    after:rounded-full my-3"
-                >
-                    Czapki
-                </li>
-            </ul>
-        </div>
-    </nav>
+    </div>
+
+    {# --- DYNAMICZNE KATEGORIE --- #}
+    <div class="bg-[#333] flex z-50">
+        {# Pobieramy tylko główne kategorie (depth=1) #}
+        {% category_tree depth=1 as tree_categories %}
+
+        <ul class="flex gap-5 mx-auto font-medium">
+            {% for tree_category, info in tree_categories %}
+                {% if info.level == 0 %} {# Tylko główne kategorie #}
+                    <li class="text-white rounded-full cursor-pointer py-2 px-4 relative z-10
+                        after:absolute after:inset-0 after:-z-10 hover:after:bg-[#DBEAFE]/30
+                        after:rounded-full flex items-center gap-1 my-3 group">
+
+                        <a href="{{ tree_category.get_absolute_url }}" class="flex items-center gap-1 w-full h-full">
+                            {{ tree_category.name }}
+
+                            {# Jeśli kategoria ma dzieci, pokaż strzałkę #}
+                            {% if tree_category.get_children.count > 0 %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down transition-transform duration-200 ease-linear group-hover:-scale-100">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            {% endif %}
+                        </a>
+
+                        {# Dropdown dla podkategorii #}
+                        {% if tree_category.get_children.count > 0 %}
+                            <div class="absolute translate-y-[100%] bottom-0 pt-2 left-0 pointer-events-none group-hover:pointer-events-auto">
+                                <div class="bg-[#1c1c1c] rounded-md min-w-36 grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-200 ease-linear z-50">
+                                    <div class="overflow-hidden">
+                                        <ul class="p-1 text-white">
+                                            {% for child in tree_category.get_children %}
+                                                <li class="hover:bg-slate-100/30 px-2 py-1 rounded-md cursor-pointer block">
+                                                    <a href="{{ child.get_absolute_url }}" class="block w-full">
+                                                        {{ child.name }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</nav>

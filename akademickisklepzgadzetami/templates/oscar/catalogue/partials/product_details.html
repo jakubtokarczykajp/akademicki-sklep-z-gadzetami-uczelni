@@ -1,0 +1,61 @@
+﻿{% load i18n %}
+
+<div class="border-t border-gray-200 pt-8 mt-8">
+    <h3 class="text-xl font-bold text-gray-900 mb-4">{% trans "Specyfikacja produktu" %}</h3>
+
+    <div class="overflow-hidden bg-white shadow sm:rounded-lg border border-gray-200">
+        <dl>
+            {# 1. Typ produktu #}
+            <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500">{% trans "Kategoria / Typ" %}</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                    {{ product.get_product_class.name }}
+                </dd>
+            </div>
+
+            {# 2. Kod UPC (jeśli istnieje) #}
+            {% if product.upc %}
+            <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500">{% trans "UPC" %}</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                    {{ product.upc }}
+                </dd>
+            </div>
+            {% endif %}
+
+            {# 3. Dynamiczne atrybuty produktu (np. Materiał, Kolor) #}
+            {% for av in product.attribute_values.all %}
+                <div class="{% cycle 'bg-gray-50' 'bg-white' %} px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{ av.attribute.name }}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ av.value_as_html }}
+                    </dd>
+                </div>
+            {% endfor %}
+
+            {# 4. Data dodania #}
+            <div class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500">{% trans "Data dodania" %}</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                    {{ product.date_created|date:"d.m.Y" }}
+                </dd>
+            </div>
+
+            {# 5. Dostępność magazynowa (opcjonalnie) #}
+            <div class="bg-gray-50 px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500">{% trans "Dostępność" %}</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                    {% if product.is_available_to_buy %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {% trans "Dostępny" %}
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            {% trans "Niedostępny" %}
+                        </span>
+                    {% endif %}
+                </dd>
+            </div>
+        </dl>
+    </div>
+</div>

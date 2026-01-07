@@ -4,33 +4,62 @@
 {% block title %}{% if category %}{{ category.name }}{% else %}{% trans "Katalog" %}{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold mb-6 text-center">
-        {% if category %}{{ category.name }}{% else %}{% trans "Przeglądaj Kategorie" %}{% endif %}
-    </h1>
-    
-    {% if categories %}
-    
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-            {% for child in categories %}
-                <a href="{{ child.get_absolute_url }}" class="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200 p-6 text-center border border-gray-200 hover:bg-blue-50">
-                    <span class="text-xl font-semibold text-blue-700">{{ child.name }}</span>
-                    {% if child.description %}
-                        <p class="text-gray-500 mt-2 text-sm">{{ child.description|truncatewords:15 }}</p>
-                    {% endif %}
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4">
+
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
+                {% if category %}{{ category.name }}{% else %}{% trans "Wszystkie produkty" %}{% endif %}
+            </h1>
+            {% if category.description %}
+                <div class="prose max-w-2xl mx-auto text-gray-500">
+                    {{ category.description|safe }}
+                </div>
+            {% endif %}
+        </header>
+
+        {# Lista podkategorii (jeśli są) #}
+        {% if categories %}
+            <div class="flex flex-wrap justify-center gap-4 mb-16">
+                {% for child in categories %}
+                    <a href="{{ child.get_absolute_url }}" class="group bg-white px-6 py-3 rounded-full shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-300 transition-all duration-300 flex items-center gap-2">
+                        <span class="font-bold text-gray-700 group-hover:text-[#015F8A]">{{ child.name }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-[#015F8A] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if page_obj.object_list %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {% for result in page_obj.object_list %}
+                    {# Haystack zwraca SearchResult, musimy pobrać .object, żeby mieć dostęp do modelu Product #}
+                    {# Chyba że widok zwraca QuerySet (zależy od konfiguracji). Sprawdzamy oba przypadki #}
+
+                    {% with product=result.object|default:result %}
+                        {% if product %}
+                             {# Używamy include z Twoim product_list.html #}
+                             {% include "oscar/catalogue/product_list.html" with product=product %}
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            </div>
+
+            <div class="mt-16 flex justify-center">
+                {% include "oscar/partials/pagination.html" %}
+            </div>
+        {% else %}
+            <div class="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
+                <div class="mb-4 text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Brak produktów</h3>
+                <p class="text-gray-500 mb-6">Niestety w tej kategorii nie ma jeszcze żadnych produktów.</p>
+                <a href="{% url 'home' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#015F8A] hover:bg-[#014f70] transition-colors">
+                    Wróć na stronę główną
                 </a>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    {% if page_obj.object_list %}
-        <h2 class="text-2xl font-bold mt-8 mb-4">{% trans "Produkty" %}</h2>
-        {# Używamy Twojego dynamicznego product_list.html, który zaimportuje poprawny widok #}
-        {% include "oscar/catalogue/partials/product_list.html" with page_obj=page_obj %}
-    {% endif %}
-
-    {% if not categories and not page_obj.object_list %}
-         <p class="text-center text-gray-400">Brak kategorii lub produktów do wyświetlenia.</p>
-    {% endif %}
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

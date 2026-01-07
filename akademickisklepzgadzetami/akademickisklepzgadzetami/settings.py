@@ -30,6 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['jakubtokarczyk00.pythonanywhere.com', '127.0.0.1', 'localhost']
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Application definition
 
@@ -44,16 +45,17 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
 
+    'akademickisklepzgadzetami.checkout.apps.CheckoutConfig',
+    'akademickisklepzgadzetami.basket.apps.BasketConfig',
+
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
-    'oscar.apps.checkout.apps.CheckoutConfig',
     'oscar.apps.address.apps.AddressConfig',
     'oscar.apps.shipping.apps.ShippingConfig',
     'oscar.apps.catalogue.apps.CatalogueConfig',
     'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
     'oscar.apps.communication.apps.CommunicationConfig',
     'oscar.apps.partner.apps.PartnerConfig',
-    'oscar.apps.basket.apps.BasketConfig',
     'oscar.apps.payment.apps.PaymentConfig',
     'oscar.apps.offer.apps.OfferConfig',
     'oscar.apps.order.apps.OrderConfig',
@@ -98,6 +100,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'oscar.apps.basket.middleware.BasketMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -105,20 +108,12 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-if 'test' in sys.argv:
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-        }
-    }
-else:
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-            'URL': 'http://127.0.0.1:8983/solr',
-            'INCLUDE_SPELLING': True,
-        },
-    }
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': BASE_DIR / 'whoosh_index',
+    },
+}
 
 ROOT_URLCONF = 'akademickisklepzgadzetami.urls'
 
@@ -179,7 +174,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pl-PL'
 
 TIME_ZONE = 'UTC'
 
@@ -187,6 +182,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+OSCAR_DEFAULT_COUNTRY = 'PL'
+OSCAR_DEFAULT_CURRENCY = 'PLN'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
