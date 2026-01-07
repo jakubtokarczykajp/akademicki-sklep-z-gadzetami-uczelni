@@ -11,7 +11,7 @@ def home(request):
     db_products = Product.objects.filter(is_public=True).prefetch_related(
         'images',
         'stockrecords'
-    ).order_by('-date_created')[:8]
+    ).order_by('-date_created')
 
     # Inicjalizacja strategii cenowej (niezbędne w Oscarze do poprawnych cen)
     strategy = Selector().strategy(request=request, user=request.user)
@@ -21,8 +21,14 @@ def home(request):
     for product in db_products:
         # A. Obliczanie ceny i dostępności za pomocą strategii Oscara
         info = strategy.fetch_for_product(product)
-        price_val = '0'
 
+        available_quantity = 0
+        # Sprawdzamy, czy produkt jest dostępny do kupienia i czy ma śledzony stan magazynowy
+        if info.availability.is_available_to_buy:
+            available_quantity = info.availability.num_available if info.availability.num_available else 0
+        # ----------------------------------------
+
+        price_val = '0'
         if info.price.is_tax_known:
             price_val = str(info.price.incl_tax)
         else:
@@ -39,18 +45,17 @@ def home(request):
             # Budujemy pełną ścieżkę statyczną
             image_url = settings.STATIC_URL + 'theme/images/placeholder.png'
 
-        # C. Budowanie słownika
-        item = {
-            "id": str(product.id),
-            "name": product.title,
-            "image": image_url,  # To teraz jest pełny URL (static lub media)
-            "price": price_val,
-
-            # W Oscarze promocje są bardziej złożone (Offers), tu upraszczamy:
-            "promotion": 'false',
-            "discount": '0',
-            "discountedPrice": price_val
-        }
+            # C. Budowanie słownika
+            item = {
+                "id": str(product.id),
+                "name": product.title,
+                "image": image_url,
+                "price": price_val,
+                "quantity": available_quantity,
+                "promotion": 'false',
+                "discount": '0',
+                "discountedPrice": price_val
+            }
 
         items.append(item)
 
