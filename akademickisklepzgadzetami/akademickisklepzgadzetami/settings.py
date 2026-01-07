@@ -115,6 +115,25 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
+OSCAR_SEARCH_FACETS: dict[str, dict[str, dict[str, str]] | dict[str, dict[str, str | list[tuple[str, str]]]]] = {
+    'fields': {
+        # Filtrowanie po typie (np. Kubek, Bluza) - to jest "kategoria" techniczna w Oscarze
+        'product_class': {'name': 'Kategoria / Typ', 'field': 'product_class'},
+    },
+    'queries': {
+        'price_range': {
+            'name': 'Cena',
+            'field': 'price',
+            'queries': [
+                ('0 TO 50', 'Do 50 zł'),
+                ('50 TO 100', '50 zł - 100 zł'),
+                ('100 TO 200', '100 zł - 200 zł'),
+                ('200 TO *', 'Powyżej 200 zł'),
+            ]
+        },
+    }
+}
+
 ROOT_URLCONF = 'akademickisklepzgadzetami.urls'
 
 TEMPLATES = [
