@@ -171,6 +171,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+LOGIN_REDIRECT_URL = '/shop/accounts/'
+
+# Gdzie przekierować po wylogowaniu (Strona główna)
+LOGOUT_REDIRECT_URL = 'home'
+
+# URL strony logowania (używany przez dekorator @login_required)
+LOGIN_URL = '/shop/accounts/login/'
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
