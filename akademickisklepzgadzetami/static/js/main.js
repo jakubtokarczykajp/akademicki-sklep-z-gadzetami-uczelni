@@ -213,9 +213,35 @@ async function updateQuantity(lineId, newQuantity) {
 }
 
 // Usuwanie linii z koszyka
+// Usuwanie linii z koszyka
 async function deleteLine(lineId) {
-    // Ustawienie ilości na 0 w naszym API skutkuje usunięciem linii
-    await updateQuantity(lineId, 0);
+    const csrftoken = getCookie('csrftoken');
+
+    try {
+        // Używamy tego samego endpointu API co przy zmianie ilości.
+        // W views.py zaimplementowaliśmy logikę: jeśli quantity <= 0 -> line.delete()
+        // Upewnij się, że URL '/api/basket/update-line/' odpowiada temu zdefiniowanemu w urls.py
+        const response = await fetch('/api/basket/update-line/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            // Przesyłamy quantity=0, aby wymusić usunięcie
+            body: `line_id=${lineId}&quantity=0`
+        });
+
+        if (response.ok) {
+            // Jeśli sukces, odświeżamy widok koszyka (AJAX) bez przeładowania strony
+            await updateBasketView();
+        } else {
+            const data = await response.json();
+            console.error('Błąd usuwania:', data.message || response.statusText);
+        }
+    } catch (error) {
+        console.error('Błąd sieci podczas usuwania:', error);
+    }
 }
 
 // Inicjalizacja przy starcie (żeby licznik był ok)
