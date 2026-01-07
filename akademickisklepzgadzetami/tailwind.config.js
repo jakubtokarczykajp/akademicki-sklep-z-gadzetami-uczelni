@@ -3,20 +3,27 @@ module.exports = {
     content: [
         "./templates/**/*.html", 
         "./**/templates/**/*.html",
+        "./templates/oscar/**/*.html",
     ],
     safelist: [
         'bg-gray-800',
         'bg-gray-600',
         'bg-blue-100',
+        'bg-red-600',
         'w-[60px]',
         'w-8',
+        'h-8',
         'h-[70px]',
         'h-full',
+        'p-6',
+        'p-8',
+        'pb-6',
         'flex',
         'flex-col',
         'right-2',
         'justify-between',
-        'bg-[#1e1e1e]'
+        'bg-[#1e1e1e]',
+        'backdrop-blur-sm'
     ],
     theme: {
         extend: {

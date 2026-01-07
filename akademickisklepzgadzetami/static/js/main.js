@@ -75,8 +75,8 @@ async function updateBasketView() {
 function createProductHTML(product) {
     return `
         <div class="bg-gray-50 p-3 rounded-2xl flex gap-4 relative group border border-gray-100 hover:border-blue-200 transition-colors">
-            <div class="w-20 h-20 bg-white rounded-xl p-2 flex-shrink-0 shadow-sm border border-gray-100">
-                <img src="${product.image || '/static/theme/images/placeholder.png'}" class="w-full h-full object-contain">
+            <div class="w-20 h-20 bg-white rounded-xl p-2 shadow-sm border border-gray-100 flex-shrink-0" style="width: 8rem; height: 8rem;">
+                <img src="${product.image || '/static/theme/images/placeholder.png'}" class="w-full h-full object-contain" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
             
             <div class="flex-1 min-w-0 flex flex-col justify-center">
@@ -85,7 +85,7 @@ function createProductHTML(product) {
                 </h4>
                 <p class="text-gray-400 text-xs mb-3">Cena jedn.: ${product.price}</p>
                 
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between mt-2">
                     <div class="flex items-center bg-white rounded-lg border border-gray-200 shadow-sm">
                         <button onclick="updateQuantity(${product.line_id}, ${product.quantity - 1})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#015F8A] hover:bg-blue-50 rounded-l-lg transition-colors">
                             -
@@ -118,7 +118,7 @@ function openBasket(){
     basketModal.classList.add('translate-x-0');
 
     basketWrapper.classList.remove('pointer-events-none', 'bg-transparent');
-    basketWrapper.classList.add('pointer-events-auto', 'bg-black/50');
+    basketWrapper.classList.add('pointer-events-auto', 'bg-black/50', 'backdrop-blur-sm');
 
     updateBasketView(); // Pobierz świeże dane
 }
@@ -128,7 +128,7 @@ function closeBasket(){
     basketModal.classList.remove('translate-x-0');
     basketModal.classList.add('translate-x-full');
 
-    basketWrapper.classList.remove('pointer-events-auto', 'bg-black/50');
+    basketWrapper.classList.remove('pointer-events-auto', 'bg-black/50', 'backdrop-blur-sm');
     basketWrapper.classList.add('pointer-events-none', 'bg-transparent');
 }
 
@@ -176,42 +176,46 @@ async function addProductToBasket(e){
 
 async function updateQuantity(lineId, newQuantity) {
     if (newQuantity < 1) {
-        // Jeśli 0, usuwamy
+        // Jeśli 0, usuwamy (zakładam, że deleteLine masz już zrobione)
         return deleteLine(lineId);
     }
 
-    // W standardowym Oscarze aktualizacja wymaga przesłania formsetu.
-    // To jest trudne do zrobienia bez dedykowanego API endpointu do aktualizacji linii.
-    // Zróbmy to "brutalnie" - wyślijmy formularz koszyka
-    // LUB: Stwórzmy prosty endpoint w views.py do aktualizacji, ale nie mamy na to miejsca w tym promptcie.
-    // Obejście: Wykorzystajmy fakt, że widok basketu obsługuje formset-y.
+    // Pobieramy token CSRF (wymagany przez Django przy POST)
+    const csrftoken = getCookie('csrftoken');
 
-    // Tu zrobimy prościej: Dla celów dydaktycznych, informujemy użytkownika, że edycja ilości
-    // działa najlepiej na stronie pełnego koszyka, lub po prostu odświeżamy stronę.
-    // ALE, skoro masz już custom view `BasketSummaryView`, możesz tam dodać obsługę update'u.
+    // Budujemy dane formularza
+    const formData = new FormData();
+    formData.append('line_id', lineId);
+    formData.append('quantity', newQuantity);
 
-    // Implementacja "na skróty" dla działającego UI:
-    // (Wymagałoby to backendu obsługującego JSON POST na update linii)
-    alert("Aby zmienić ilość, przejdź do pełnego widoku koszyka.");
-    window.location.href = "/shop/basket/";
+    try {
+        const response = await fetch('/api/basket/update-line/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+        console.log(data)
+        if (data.status === 'ok') {
+            // Odświeżamy cały widok koszyka, aby zaktualizować licznik, sumę i listy
+            await updateBasketView();
+        } else {
+            console.error('Błąd aktualizacji:', data.message);
+            alert('Wystąpił błąd podczas aktualizacji koszyka.');
+        }
+
+    } catch (error) {
+        console.error('Błąd sieci:', error);
+    }
 }
 
 // Usuwanie linii z koszyka
 async function deleteLine(lineId) {
-    const csrftoken = getCookie('csrftoken');
-
-    // Oscar obsługuje usuwanie przez POST na specjalny URL linii? Nie standardowo.
-    // Standardowo to POST na /shop/basket/ z form-ID-DELETE.
-
-    // Rozwiązanie: Użyjmy "haka" - wyślijmy żądanie usunięcia.
-    // W Oscarze każda linia ma delete URL, ale jest on w szablonie.
-    // Spróbujmy użyć niestandardowego podejścia lub po prostu przekierujmy.
-
-    // Aby to działało w pełni asynchronicznie, musielibyśmy rozbudować `BasketSummaryView` o obsługę DELETE.
-    // Zróbmy to teraz w `views.py`? Nie mam dostępu do edycji views.py w tym bloku JS.
-
-    // Zróbmy redirect dla bezpieczeństwa:
-    window.location.href = "/shop/basket/";
+    // Ustawienie ilości na 0 w naszym API skutkuje usunięciem linii
+    await updateQuantity(lineId, 0);
 }
 
 // Inicjalizacja przy starcie (żeby licznik był ok)

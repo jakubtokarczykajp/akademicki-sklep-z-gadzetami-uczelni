@@ -7,7 +7,7 @@ python -m venv .venv
 
 pip install -r requirements.txt
 
-python manage.py migrate
+# python manage.py migrate TEGO NIE !!!!!!!!!!!!!!!!!!!! BO PO BAZIEI BĘDZIE GG
 python manage.py runserver
 
 npm run dev

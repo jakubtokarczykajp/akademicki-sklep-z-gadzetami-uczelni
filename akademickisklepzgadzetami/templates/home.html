@@ -221,11 +221,32 @@
                         data-image="{{item.image}}"
                         data-discount="{{item.discount}}"
                         data-promotion="{{item.promotion}}"
-                        class="flex flex-col group cursor-pointer relative
+                        class="flex flex-col cursor-pointer relative
+
                                 after:absolute after:inset-0 after:bg-[url('/static/theme/images/backgroundTile.png')]
                                 after:-z-10 z-10 after:bg-cover after:bg-no-repeat bg-white shadow-md
                                 after:bg-bottom after:rounded-b-lg after:brightness-90
+                                {% if item.quantity == 0 %} opacity-50 gray-scale-100 {% endif %}
+                                {% if item.quantity != 0 %} group {% endif %}
                                 p-4 rounded-lg justify-stretch w-[250px] h-[330px]">
+
+                                {% if item.quantity == 0 %}
+                                    <span class="absolute block px-2 py-1 left-2 top-2 rounded-full text-gray-100 font-medium" 
+                                    style="background-color: rgb(204, 31, 31);">
+                                        Niedostępny
+                                    </span>
+                                {% elif item.quantity == 1 %}
+                                    <span class="absolute block px-2 py-1 left-2 top-2 rounded-full text-gray-100 font-medium" 
+                                    style="background-color: rgb(204, 149, 31);">
+                                        Ostatnia sztuka
+                                    </span>
+                                {% else %}
+                                    <span class="absolute block px-2 py-1 left-2 top-2 rounded-full text-gray-100 font-medium" 
+                                    style="background-color: rgb(31, 204, 31);">
+                                        Dostępny
+                                    </span>
+                                {% endif %}
+                               
                             {% if item.promotion == 'true' %}
                                 <span 
                                     class="absolute block bg-black px-2 py-1 left-2 top-2 rounded-full text-gray-100 font-medium"
@@ -270,43 +291,45 @@
                                     {{item.name}}
                                 </span>
                             </div>
-                            <div class="mt-5 flex items-center w-full relative">
-                                <button
-                                    onclick="addProductToBasket(event)" 
-                                    class="bg-black hover:bg-slate-800 text-gray-100 p-2 rounded-full relative group/add">
-                                    <svg 
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        width="24" height="24" 
-                                        viewBox="0 0 24 24" 
-                                        fill="none" 
-                                        stroke="currentColor" 
-                                        stroke-width="2" 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round" 
-                                        class="lucide pointer-events-none lucide-shopping-cart-icon lucide-shopping-cart"
-                                    >
-                                        <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
-                                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
-                                    </svg>
-                                    <div 
-                                        class="absolute bottom-[6px] right-[6px] bg-black group-hover/add:bg-slate-800 rounded-full"
-                                    >
+                            <div class="mt-5 flex items-center w-full relative min-h-[40px]">
+                                 {% if item.quantity != 0 %}
+                                    <button
+                                        onclick="addProductToBasket(event)" 
+                                        class="bg-black hover:bg-slate-800 text-gray-100 p-2 rounded-full relative group/add">
                                         <svg 
                                             xmlns="http://www.w3.org/2000/svg" 
-                                            width="16" height="16" 
-                                            viewBox="0 0 20 20" 
+                                            width="24" height="24" 
+                                            viewBox="0 0 24 24" 
                                             fill="none" 
                                             stroke="currentColor" 
                                             stroke-width="2" 
                                             stroke-linecap="round" 
                                             stroke-linejoin="round" 
-                                            class="
-                                                lucide pointer-events-none lucide-plus-icon lucide-plus"
-                                    >
-                                        <path d="M5 12h14"/><path d="M12 5v14"/>
-                                    </svg>
-                                    </div>
-                                </button>
+                                            class="lucide pointer-events-none lucide-shopping-cart-icon lucide-shopping-cart"
+                                        >
+                                            <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+                                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                                        </svg>
+                                        <div 
+                                            class="absolute bottom-[6px] right-[6px] bg-black group-hover/add:bg-slate-800 rounded-full"
+                                        >
+                                            <svg 
+                                                xmlns="http://www.w3.org/2000/svg" 
+                                                width="16" height="16" 
+                                                viewBox="0 0 20 20" 
+                                                fill="none" 
+                                                stroke="currentColor" 
+                                                stroke-width="2" 
+                                                stroke-linecap="round" 
+                                                stroke-linejoin="round" 
+                                                class="
+                                                    lucide pointer-events-none lucide-plus-icon lucide-plus"
+                                        >
+                                            <path d="M5 12h14"/><path d="M12 5v14"/>
+                                        </svg>
+                                        </div>
+                                    </button>
+                                {% endif %}
                                 <div
                                     class="text-lg font-medium bg-black pr-5 pl-2 rounded-md text-gray-100
                                     absolute -right-9 min-w-[80px]"

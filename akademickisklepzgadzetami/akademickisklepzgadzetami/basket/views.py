@@ -1,8 +1,9 @@
 ﻿from django.http import JsonResponse
 from oscar.apps.basket.views import BasketView as CoreBasketView
-from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from oscar.core.loading import get_model
+from django.utils.decorators import method_decorator
+from django.views.decorators.vary import vary_on_headers
 
 Line = get_model('basket', 'Line')
 
@@ -63,6 +64,7 @@ def update_line_quantity_api(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+@method_decorator(vary_on_headers('X-Requested-With'), name='dispatch')
 class BasketSummaryView(CoreBasketView):
     def render_to_response(self, context, **response_kwargs):
         # Sprawdzamy czy to żądanie AJAX
@@ -95,8 +97,13 @@ class BasketSummaryView(CoreBasketView):
         data = {
             'products': items,
             'total_price': str(basket.total_incl_tax),
-            'items_count': basket.num_lines,
+            'items_count': basket.num_items,
             # Opcjonalnie możesz dodać wiadomości do odpowiedzi JSON, jeśli frontend ma je wyświetlać
             # 'messages': list(flash_messages.values()) if flash_messages else []
         }
-        return JsonResponse(data)
+        response = JsonResponse(data)
+     
+        response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response

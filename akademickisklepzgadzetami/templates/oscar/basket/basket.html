@@ -1,0 +1,188 @@
+{% load static %}
+{% load i18n %}
+{% load currency_filters %}
+{% load purchase_info_tags %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twój Koszyk - Akademicki Sklep AJP</title>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-exo flex flex-col min-h-screen">
+    {% include "components/nav.html" %}
+
+    <main class="max-w-7xl mx-auto px-4 py-12 flex-grow w-full">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">Twój Koszyk</h1>
+        </div>
+
+        {% if messages %}
+            <div class="mb-8 space-y-4">
+                {% for message in messages %}
+                    <div class="p-4 rounded-2xl {% if message.tags == 'success' %}bg-green-100 text-green-800 border border-green-200{% elif message.tags == 'error' %}bg-red-100 text-red-800 border border-red-200{% else %}bg-blue-100 text-blue-800 border border-blue-200{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if not basket.is_empty %}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                {# LISTA PRODUKTÓW #}
+                <div class="lg:col-span-2 space-y-6">
+                    <form action="{% url 'basket:summary' %}" method="post" class="basket_summary w-full" id="basket_formset">
+                        {% csrf_token %}
+                        {{ formset.management_form }}
+
+                        {% if formset.non_form_errors %}
+                            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl mb-6">
+                                {{ formset.non_form_errors }}
+                            </div>
+                        {% endif %}
+
+                        {% for form in formset %}
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                            {% with line=form.instance %}
+                                {% purchase_info_for_line request line as session %}
+                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-6 items-center transition-all hover:shadow-md">
+                                    {# Zdjęcie #}
+                                    <div class="w-32 h-32 bg-gray-50 rounded-2xl p-2 flex-shrink-0 border border-gray-50">
+                                        {% with image=line.product.primary_image %}
+                                            <img src="{{ image.original.url }}" alt="{{ line.product.get_title }}" class="w-full h-full object-contain">
+                                        {% endwith %}
+                                    </div>
+
+                                    {# Info #}
+                                    <div class="flex-1 text-center sm:text-left">
+                                        <h2 class="text-xl font-bold text-gray-900 mb-1">{{ line.product.get_title }}</h2>
+                                        <p class="text-gray-400 text-sm mb-4">Cena jednostkowa: {{ line.unit_price_incl_tax|currency:line.basket.currency }}</p>
+                                        
+                                        <div class="flex items-center justify-center sm:justify-start gap-4">
+                                            {% for error in form.quantity.errors %}
+                                                <span class="text-red-500 text-xs font-medium">{{ error }}</span>
+                                            {% endfor %}
+                                            
+                                            <div class="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1 flex-nowrap">
+                                                <div class="w-16">
+                                                    {% render_field form.quantity class+="bg-transparent border-none text-center w-full focus:ring-0 font-bold text-gray-700" %}
+                                                </div>
+                                                <button type="submit" class="ml-2 text-xs font-bold text-[#015F8A] uppercase hover:text-blue-700 px-2">Aktualizuj</button>
+                                            </div>
+                                            <div class="hidden">
+                                                {{ form.DELETE }}
+                                            </div>
+                                            <button type="button" onclick="var input = this.previousElementSibling.querySelector('input'); if(input) { input.checked = true; this.closest('form').submit(); }" class="text-gray-300 hover:text-red-500 transition-colors p-2" title="Usuń produkt">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {# Cena #}
+                                    <div class="text-right min-w-[120px]">
+                                        <p class="text-2xl font-black text-[#015F8A]">{{ line.line_price_incl_tax|currency:line.basket.currency }}</p>
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </form>
+                </div>
+
+                {# PODSUMOWANIE #}
+                <div class="lg:col-span-1">
+                    <div class="bg-[#333] text-white p-8 rounded-[2rem] shadow-xl sticky top-24">
+                        <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4 uppercase tracking-wider">Podsumowanie</h3>
+                        
+                        {# VOUCHERS #}
+                        {% if voucher_form %}
+                            <form action="{% url 'basket:vouchers-add' %}" method="post" class="mb-6 border-b border-white/10 pb-6">
+                                {% csrf_token %}
+                                <h4 class="text-sm font-bold text-gray-400 uppercase mb-2">Kod rabatowy</h4>
+                                <div class="flex gap-2">
+                                    {% render_field voucher_form.code class+="bg-white/10 border-none text-white placeholder-gray-500 rounded-xl text-sm w-full focus:ring-2 focus:ring-[#015F8A] p-3" placeholder="Wpisz kod" %}
+                                    <button type="submit" class="bg-white/10 hover:bg-white/20 text-white px-4 rounded-xl transition-colors font-bold">
+                                        OK
+                                    </button>
+                                </div>
+                                {% for error in voucher_form.code.errors %}
+                                    <p class="text-red-400 text-xs mt-1">{{ error }}</p>
+                                {% endfor %}
+                            </form>
+                        {% endif %}
+
+                        {% if basket.vouchers.exists %}
+                            <div class="mb-6 border-b border-white/10 pb-6">
+                                <h4 class="text-sm font-bold text-gray-400 uppercase mb-2">Aktywne kody</h4>
+                                <ul class="space-y-2">
+                                    {% for voucher in basket.vouchers.all %}
+                                        <li class="flex justify-between items-center text-sm text-white bg-white/10 px-3 py-2 rounded-lg">
+                                            <span>{{ voucher.code }}</span>
+                                            <form action="{% url 'basket:vouchers-remove' pk=voucher.id %}" method="POST">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-red-400 hover:text-red-300 font-bold px-2" title="Usuń">&times;</button>
+                                            </form>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between text-gray-400">
+                                <span>Wartość produktów</span>
+                                <span class="text-white font-medium">{{ basket.total_incl_tax|currency:basket.currency }}</span>
+                            </div>
+                            <div class="flex justify-between text-gray-400">
+                                <span>Dostawa</span>
+                                <span class="text-white font-medium">Obliczana w kasie</span>
+                            </div>
+                            {% if basket.offer_applications %}
+                                <div class="flex justify-between text-green-400">
+                                    <span>Rabaty</span>
+                                    <span class="font-medium">-{{ basket.total_discount|currency:basket.currency }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex justify-between items-end mb-8 border-t border-white/10 pt-6">
+                            <span class="text-sm uppercase font-bold text-gray-400">Razem</span>
+                            <span class="text-3xl font-black text-white">{{ basket.total_incl_tax|currency:basket.currency }}</span>
+                        </div>
+
+                        <a href="{% url 'checkout:index' %}" class="block w-full bg-[#015F8A] hover:bg-blue-600 text-white text-center font-bold py-4 rounded-2xl transition-all transform active:scale-95 shadow-lg shadow-blue-900/20 mb-4">
+                            Przejdź do kasy
+                        </a>
+                        <a href="{% url 'home' %}" class="block w-full text-center text-gray-400 hover:text-white text-sm transition-colors underline underline-offset-4">
+                            Kontynuuj zakupy
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-white rounded-[3rem] p-20 text-center shadow-sm border border-gray-100">
+                <div class="bg-gray-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Twój koszyk jest pusty</h2>
+                <p class="text-gray-500 mb-8">Wygląda na to, że nie dodałeś jeszcze żadnych produktów.</p>
+                <a href="{% url 'home' %}" class="inline-block bg-[#015F8A] text-white font-bold py-4 px-10 rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20">
+                    Zacznij zakupy
+                </a>
+            </div>
+        {% endif %}
+    </main>
+
+    {% include "components/footer.html" %}
+    {% include "components/basket-modal.html" %}
+    
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
