@@ -6,6 +6,7 @@ from oscar.core.loading import get_model
 
 Line = get_model('basket', 'Line')
 
+
 @require_POST
 def update_line_quantity_api(request):
     """
@@ -18,23 +19,43 @@ def update_line_quantity_api(request):
         return JsonResponse({'status': 'error', 'message': 'Brak danych'}, status=400)
 
     try:
-        # Pobieramy linię należącą do obecnego koszyka (ważne dla bezpieczeństwa!)
+        # Pobieramy linię należącą do obecnego koszyka
         line = request.basket.lines.get(id=line_id)
 
         # Konwersja na int
         qty = int(quantity)
 
-        # Oscarowa metoda do aktualizacji ilości (obsługuje logikę magazynową)
-        request.basket.update_line(line, qty)
+        # POPRAWKA: Zamiast nieistniejącej metody update_line, modyfikujemy linię bezpośrednio
+        if qty > 0:
+            line.quantity = qty
+            line.save()
+        else:
+            # Jeśli ilość <= 0, usuwamy linię z koszyka
+            line.delete()
 
-        # Zwracamy nowe dane, żeby zaktualizować frontend
+        # Zwracamy nowe dane
+        # Uwaga: Wartości cenowe mogą wymagać ponownego przeliczenia przez strategię,
+        # ale w prostym przypadku pobranie ich z właściwości powinno zadziałać,
+        # o ile middleware Oscara podpięło strategię do koszyka.
+
+        # Jeśli linia została usunięta, nie możemy odwołać się do jej atrybutów
+        if qty > 0:
+            line_price = str(line.line_price_incl_tax)
+            new_quantity = line.quantity
+            line_id_resp = line.id
+        else:
+            line_price = "0.00"
+            new_quantity = 0
+            line_id_resp = None
+
         return JsonResponse({
             'status': 'ok',
-            'line_id': line.id,
-            'new_quantity': line.quantity,
-            'line_price': str(line.line_price_incl_tax),  # lub excl_tax zależnie od ustawień
+            'line_id': line_id_resp,
+            'new_quantity': new_quantity,
+            'line_price': line_price,
             'basket_total': str(request.basket.total_incl_tax)
         })
+
     except Line.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Linia nie znaleziona'}, status=404)
     except ValueError:
