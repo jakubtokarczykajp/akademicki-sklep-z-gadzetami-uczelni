@@ -1,41 +1,42 @@
-<div data-basket-wrapper class="fixed inset-0 bg-transparent z-50 pointer-events-none
-  transition-all duration-300 ease-linear flex flex-col">
-  <div 
-  data-basket-modal
-  class="bg-[#333] h-screen w-80 fixed top-0 right-0 z-50 p-3 rounded-l-2xl
-         translate-x-full transition-transform duration-300 ease-in-out flex flex-col"
-  >
+<div data-basket-wrapper class="fixed inset-0 bg-transparent z-50 pointer-events-none transition-all duration-300 ease-linear flex flex-col backdrop-blur-sm">
+  <div data-basket-modal class="bg-white h-screen w-full sm:w-96 fixed top-0 right-0 z-50 p-6 shadow-2xl translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-gray-100">
 
-    <header class="border-b px-2">
-      <h2 class="text-xl font-bold mb-4 text-white">Twój koszyk</h2>
+    {# HEADER #}
+    <header class="flex items-center justify-between border-b border-gray-100 pb-6 mb-4">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-50 p-2 rounded-lg text-[#015F8A]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900">Twój koszyk</h2>
+      </div>
+      <button onclick="closeBasket()" class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all p-2 rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
     </header>
-    <button
-      onclick="closeBasket()" 
-      data-basket-close class="text-white bg-transparent w-5 h-5 flex rounded-full
-      items-center justify-center absolute top-3 right-3 hover:bg-slate-400
-      hover:text-black transition-all duration-300 ease-linear">
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width="24" height="24" 
-        viewBox="0 0 24 24" 
-        fill="none" stroke="currentColor" 
-        stroke-width="2" stroke-linecap="round" 
-        stroke-linejoin="round" 
-        class="lucide lucide-x-icon lucide-x"
-      >
-        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-      </svg>
-    </button>
 
-    <div data-basket-content class="text-gray-300 px-2 flex flex-col gap-4
-     min-h-0 flex-1 overflow-auto custom-scroll my-4">
-      <!-- CHOSEN PRODUCTS HERE -->
+    {# LISTA PRODUKTÓW #}
+    <div data-basket-content class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-4 -mr-2">
+      <!-- Produkty wstrzykiwane przez JS -->
     </div>
-    <button
-      data-summary-button    
-      class="bg-[#1e1e1e] text-white p-2 w-full rounded-full border mt-auto mb-3
-      text-sm hover:bg-[#2c2c2c]">
-      Przejdź do podsumowania
-    </button>
+
+    {# FOOTER #}
+    <div class="mt-auto pt-6 border-t border-gray-100 bg-white">
+        <div class="flex justify-between items-end mb-6">
+            <span class="text-gray-500 font-medium">Suma do zapłaty</span>
+            <span data-basket-total class="text-2xl font-black text-[#015F8A]">0.00 zł</span>
+        </div>
+
+        <a href="{% url 'basket:summary' %}"
+           class="flex items-center justify-center w-full bg-[#015F8A] hover:bg-[#014f70] text-white font-bold py-4 px-6 rounded-xl transition-all transform active:scale-[0.98] shadow-lg shadow-blue-500/20 group">
+          <span>Przejdź do kasy</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+        </a>
+
+        <div class="mt-4 text-center">
+            <button onclick="closeBasket()" class="text-sm text-gray-400 hover:text-gray-600 underline decoration-gray-300 underline-offset-2">
+                Kontynuuj zakupy
+            </button>
+        </div>
+    </div>
   </div>
 </div>
