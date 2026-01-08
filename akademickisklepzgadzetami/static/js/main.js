@@ -5,6 +5,8 @@ const basketTotal = document.querySelector('[data-basket-total]');
 const basketCounter = document.querySelector('[data-basket-counter]');
 
 let isBasketOpen = false;
+// Global variable for the notification container
+let notificationContainerElement;
 
 // Pobieramy CSRF token
 function getCookie(name) {
@@ -254,13 +256,29 @@ async function deleteLine(lineId) {
 // Inicjalizacja przy starcie
 document.addEventListener('DOMContentLoaded', () => {
     updateBasketView();
+    notificationContainerElement = document.getElementById('notification-container'); // Initialize here
 });
 
 // Function to display a notification
 function displayNotification(message, type = 'info') {
-    const notificationContainer = document.getElementById('messages');
-    if (!notificationContainer) {
-        console.warn("Notification container #messages not found.");
+    let container = notificationContainerElement; // Use the globally cached element
+
+    // Fallback: If container is not initialized by DOMContentLoaded (e.g., very fast click)
+    if (!container) {
+        container = document.getElementById('notification-container');
+        if (!container) {
+            // If still not found, create it dynamically
+            container = document.createElement('div');
+            container.id = 'notification-container';
+            container.className = 'fixed top-4 right-4 flex flex-col gap-2 z-[100]'; // Apply the same Tailwind classes
+            document.body.appendChild(container);
+            // Cache it for future calls
+            notificationContainerElement = container; // Cache the dynamically created element
+        }
+    }
+
+    if (!container) { // Should not happen after dynamic creation, but for safety
+        console.warn("Notification container could not be found or created.");
         return;
     }
 
@@ -301,7 +319,7 @@ function displayNotification(message, type = 'info') {
         notificationDiv.remove();
     });
 
-    notificationContainer.appendChild(notificationDiv);
+    container.appendChild(notificationDiv);
 
     // Auto-dismiss after 5 seconds
     setTimeout(() => {
@@ -337,8 +355,7 @@ async function addProductToWishlist(event) {
 
         if (response.ok) { // This means status is 2xx after all redirects
             displayNotification("Produkt został dodany do listy życzeń!", "success");
-            // Perform client-side redirect to the wishlist page
-            window.location.href = "http://127.0.0.1:8000/shop/accounts/wishlists/";
+            // Removed client-side redirect: window.location.href = "http://127.0.0.1:8000/shop/accounts/wishlists/";
         } else {
             const errorText = await response.text();
             console.error('Błąd dodawania do listy życzeń:', response.status, errorText);
