@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load display_tags %}
+
+{% block title %}
+    {% trans "Add a new address" %} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "My Account" %}</h1>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                     <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'customer:profile-view' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Profile" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:order-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Order History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:address-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold bg-[#015F8A] text-white">{% trans "Address Book" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:email-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Email History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:alerts-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Product Alerts" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:notifications-inbox' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Notifications" %}</a>
+                        </li>
+                        {% iffeature 'wishlists' %}
+                            <li>
+                                <a href="{% url 'customer:wishlists-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Wish Lists" %}</a>
+                            </li>
+                        {% endiffeature %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{% trans "Add a new address" %}</h2>
+                    
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
+                            {% for field in form %}
+                                <div class="{% if field.name == 'line4' %}md:col-span-2{% endif %}">
+                                    <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                                        {{ field.label }}
+                                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                                    </label>
+                                    
+                                    {{ field|add_class:"w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors" }}
+                                    
+                                    {% if field.help_text %}
+                                        <p class="mt-2 text-xs text-gray-500">{{ field.help_text|safe }}</p>
+                                    {% endif %}
+                                    
+                                    {% for error in field.errors %}
+                                        <p class="mt-2 text-xs text-red-600 font-medium">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="flex items-center gap-4 pt-4">
+                            <button type="submit" class="inline-block bg-[#015F8A] text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20">
+                                {% trans "Save" %}
+                            </button>
+                            <a href="{% url 'customer:address-list' %}" class="text-sm text-gray-500 font-medium hover:text-gray-800">
+                                {% trans "Cancel" %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include "components/basket-modal.html" %}
+{% endblock %}

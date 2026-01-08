@@ -33,6 +33,7 @@
             </div>
         {% endif %}
 
+        <div id="basket-content-wrapper">
         {% if not basket.is_empty %}
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 {# LISTA PRODUKTÓW #}
@@ -178,6 +179,7 @@
                 </a>
             </div>
         {% endif %}
+        </div>
     </main>
 
     {% include "components/footer.html" %}

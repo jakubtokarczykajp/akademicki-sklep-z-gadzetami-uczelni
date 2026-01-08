@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load display_tags %}
+
+{% block title %}
+    {% if wishlist %}{% trans "Edit Wish List" %}{% else %}{% trans "Create Wish List" %}{% endif %} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.77-.77-.77a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"/><path d="M12 5v.01"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "My Account" %}</h1>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                     <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'customer:profile-view' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Profile" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:order-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Order History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:address-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Address Book" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:email-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Email History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:alerts-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Product Alerts" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:notifications-inbox' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Notifications" %}</a>
+                        </li>
+                        {% iffeature 'wishlists' %}
+                            <li>
+                                <a href="{% url 'customer:wishlists-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold bg-[#015F8A] text-white">{% trans "Wish Lists" %}</a>
+                            </li>
+                        {% endiffeature %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        {% if wishlist %}{% trans "Edit Wish List" %}{% else %}{% trans "Create a New Wish List" %}{% endif %}
+                    </h2>
+
+                    <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-xl mb-6 text-sm">
+                        <strong>{% trans "How it works:" %}</strong>
+                        <ol class="list-decimal list-inside mt-2 space-y-1">
+                            <li>{% trans "First, create a new wish list by giving it a name." %}</li>
+                            <li>{% trans "Then, browse the shop and add products to your new list." %}</li>
+                        </ol>
+                    </div>
+                    
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
+                        {{ shared_emails_formset.management_form }}
+                        
+                        <div>
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                                {{ form.name.label }}
+                                {% if form.name.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                            {{ form.name|add_class:"w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors" }}
+                            <p class="mt-2 text-xs text-gray-500">{% trans "e.g. 'My birthday presents'" %}</p>
+                            {% for error in form.name.errors %}
+                                <p class="mt-2 text-xs text-red-600 font-medium">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.visibility.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                                {{ form.visibility.label }}
+                                {% if form.visibility.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                            {{ form.visibility|add_class:"w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors" }}
+                            {% for error in form.visibility.errors %}
+                                <p class="mt-2 text-xs text-red-600 font-medium">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-800">{% trans "Share wishlist" %}</h3>
+                            <p class="text-sm text-gray-500 mt-1 mb-4">
+                                {% trans "If you want to share your wishlist with others, you can add their email addresses below. The visibility must be set to shared in order for this to work." %}
+                            </p>
+                            <div class="space-y-4">
+                            {% for formset_form in shared_emails_formset %}
+                                <div class="flex items-center gap-4">
+                                    <div class="flex-grow">
+                                        {{ formset_form.email|add_class:"w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors"|attr:"placeholder:Enter email address" }}
+                                        {% for error in formset_form.email.errors %}
+                                            <p class="mt-2 text-xs text-red-600 font-medium">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                    {% if formset_form.instance.pk %}{{ formset_form.DELETE }}{% endif %}
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-4 pt-4">
+                            <button type="submit" class="inline-block bg-[#015F8A] text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20">
+                                {% trans "Save" %}
+                            </button>
+                            <a href="{% url 'customer:wishlists-list' %}" class="text-sm text-gray-500 font-medium hover:text-gray-800">
+                                {% trans "Cancel" %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include "components/basket-modal.html" %}
+{% endblock %}

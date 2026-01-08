@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load display_tags %}
+
+{% block title %}
+    {% trans "Email History" %} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/><path d="M16 7H8"/><path d="M16 11H8"/><path d="M10 15H8"/><path d="m16 14-3 3 3 3"/><path d="M13 17H7"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "My Account" %}</h1>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                     <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'customer:profile-view' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Profile" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:order-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Order History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:address-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Address Book" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:email-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold bg-[#015F8A] text-white">{% trans "Email History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:alerts-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Product Alerts" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:notifications-inbox' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Notifications" %}</a>
+                        </li>
+                        {% iffeature 'wishlists' %}
+                            <li>
+                                <a href="{% url 'customer:wishlists-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Wish Lists" %}</a>
+                            </li>
+                        {% endiffeature %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{% trans "Email History" %}</h2>
+                    
+                    {% if emails %}
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="py-3 px-6">{% trans 'Subject' %}</th>
+                                        <th scope="col" class="py-3 px-6">{% trans 'Date sent' %}</th>
+                                        <th scope="col" class="py-3 px-6"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for email in emails %}
+                                    <tr class="bg-white border-b hover:bg-gray-50">
+                                        <td class="py-4 px-6 font-medium text-gray-900">{{ email.subject }}</td>
+                                        <td class="py-4 px-6">{{ email.date_sent|date:"d M Y H:i" }}</td>
+                                        <td class="py-4 px-6 text-right">
+                                            <a href="{% url 'customer:email-detail' email_id=email.id %}" class="font-medium text-[#015F8A] hover:underline">{% trans "View" %}</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if page_obj %}
+                            <div class="mt-8 flex justify-center">
+                                <nav>
+                                    <ul class="flex items-center -space-x-px">
+                                        {% if page_obj.has_previous %}
+                                            <li>
+                                                <a href="?{% get_parameters 'page' %}page={{ page_obj.previous_page_number }}" class="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                                                    {% trans "Previous" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        <li>
+                                            <span class="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300">
+                                                {% blocktrans with page_num=page_obj.number total_pages=paginator.num_pages %}
+                                                    Page {{ page_num }} of {{ total_pages }}
+                                                {% endblocktrans %}
+                                            </span>
+                                        </li>
+
+                                        {% if page_obj.has_next %}
+                                            <li>
+                                                <a href="?{% get_parameters 'page' %}page={{ page_obj.next_page_number }}" class="py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                                                    {% trans "Next" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        {% endif %}
+
+                    {% else %}
+                         <div class="bg-gray-50 rounded-[2rem] p-12 text-center border border-gray-100">
+                            <div class="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/><path d="M16 7H8"/><path d="M16 11H8"/><path d="M10 15H8"/><path d="m16 14-3 3 3 3"/><path d="M13 17H7"/></svg>
+                            </div>
+                             <h2 class="text-2xl font-bold text-gray-900 mb-2">{% trans "No emails found." %}</h2>
+                             <p class="text-gray-500 mb-8">{% trans "We haven't sent you any emails yet." %}</p>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include "components/basket-modal.html" %}
+{% endblock %}

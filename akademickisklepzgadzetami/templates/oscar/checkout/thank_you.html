@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load currency_filters %}
+
+{% block title %}
+    {% trans "Confirmation" %} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-4xl mx-auto px-4 py-12 text-center">
+        
+        <div class="bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-gray-100">
+            <div class="w-24 h-24 sm:w-32 sm:h-32 mx-auto bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 sm:w-16 sm:h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">{% trans "Thank you for your order!" %}</h1>
+            <p class="text-gray-600 mb-4">
+                {% blocktrans with number=order.number %}
+                A confirmation email has been sent. Your order number is <strong class="font-bold text-gray-800">{{ number }}</strong>.
+                {% endblocktrans %}
+            </p>
+            <p class="text-gray-500 text-sm mb-8">{% trans "You can check the status of your order in your account." %}</p>
+
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="{% url 'customer:order-list' %}" class="w-full sm:w-auto bg-[#015F8A] text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20">
+                    {% trans "View your orders" %}
+                </a>
+                <a href="#" onclick="window.print(); return false;" class="w-full sm:w-auto bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-xl hover:bg-gray-300 transition-colors">
+                    {% trans "Print this page" %}
+                </a>
+                <a href="{{ homepage_url }}" class="w-full sm:w-auto text-sm text-gray-500 font-medium hover:text-gray-800">
+                    {% trans "Continue shopping" %} &rarr;
+                </a>
+            </div>
+        </div>
+
+        {# Order Details Expander #}
+        <div x-data="{ open: false }" class="mt-8 text-left max-w-4xl mx-auto">
+            <button @click="open = !open" class="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center text-lg font-bold text-gray-800">
+                <span>{% trans "View order details" %}</span>
+                <svg x-bind:class="{ 'rotate-180': open }" class="w-6 h-6 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <div x-show="open" x-transition class="bg-white p-8 rounded-b-2xl border-x border-b border-gray-100">
+                <div class="space-y-8">
+                    {# Shipping Address #}
+                    <div class="border-b border-gray-200 pb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">{% trans "Shipping Address" %}</h3>
+                        <address class="not-italic text-gray-600">
+                            {% for field in order.shipping_address.active_address_fields %}
+                                {{ field }}<br/>
+                            {% endfor %}
+                        </address>
+                    </div>
+
+                    {# Order Contents #}
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">{% trans "Items" %}</h3>
+                        <div class="space-y-4">
+                            {% for line in order.lines.all %}
+                                <div class="flex items-center gap-4 text-sm border-b border-gray-100 pb-4">
+                                    <div class="w-16 h-16 bg-gray-100 rounded-lg p-1 flex-shrink-0">
+                                        {% with image=line.product.primary_image %}
+                                            <img src="{{ image.original.url }}" alt="{{ line.product.get_title }}" class="w-full h-full object-contain">
+                                        {% endwith %}
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-bold text-gray-800">{{ line.product.get_title }}</p>
+                                        <p class="text-gray-500">{% trans "Qty" %}: {{ line.quantity }}</p>
+                                    </div>
+                                    <p class="font-bold text-gray-800">{{ line.line_price_incl_tax|currency:order.currency }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Order Totals #}
+                    <div class="bg-gray-50 p-6 rounded-2xl mt-8">
+                        <h3 class="text-lg font-bold mb-4">{% trans "Total" %}</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-gray-600"><span>{% trans "Subtotal" %}</span><span class="font-medium">{{ order.total_incl_tax|currency:order.currency }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+{% include "components/basket-modal.html" %}
+<script src="//unpkg.com/alpinejs" defer></script>
+{% endblock %}

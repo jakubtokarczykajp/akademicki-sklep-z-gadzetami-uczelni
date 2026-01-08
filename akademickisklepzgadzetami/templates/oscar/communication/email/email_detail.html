@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load display_tags %}
+
+{% block title %}
+    {{ email.subject }} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/><path d="M16 7H8"/><path d="M16 11H8"/><path d="M10 15H8"/><path d="m16 14-3 3 3 3"/><path d="M13 17H7"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "My Account" %}</h1>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                     <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'customer:profile-view' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Profile" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:order-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Order History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:address-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Address Book" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:email-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold bg-[#015F8A] text-white">{% trans "Email History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:alerts-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Product Alerts" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:notifications-inbox' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Notifications" %}</a>
+                        </li>
+                        {% iffeature 'wishlists' %}
+                            <li>
+                                <a href="{% url 'customer:wishlists-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Wish Lists" %}</a>
+                            </li>
+                        {% endiffeature %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="border-b border-gray-200 pb-4 mb-6">
+                        <a href="{% url 'customer:email-list' %}" class="text-sm font-medium text-[#015F8A] hover:text-blue-700 mb-4 inline-block">&larr; {% trans "Back to email history" %}</a>
+                        <h2 class="text-2xl font-bold text-gray-900">{{ email.subject }}</h2>
+                        <p class="text-sm text-gray-500 mt-1">{% trans "Sent on" %} {{ email.date_sent|date:"d M Y, H:i" }}</p>
+                    </div>
+
+                    <div class="prose max-w-none">
+                        {% if email.body_html %}
+                             <iframe id="email-preview" class="w-full h-[60vh] border border-gray-200 rounded-lg" srcdoc="{{ email.body_html|safe }}"></iframe>
+                        {% else %}
+                            <pre class="whitespace-pre-wrap text-sm">{{ email.body_text }}</pre>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include "components/basket-modal.html" %}
+{% endblock %}

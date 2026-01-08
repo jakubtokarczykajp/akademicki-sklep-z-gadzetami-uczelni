@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load display_tags %}
+
+{% block title %}
+    {% trans "Address Book" %} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "My Account" %}</h1>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                     <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'customer:profile-view' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Profile" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:order-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Order History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:address-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold bg-[#015F8A] text-white">{% trans "Address Book" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:email-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Email History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:alerts-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Product Alerts" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:notifications-inbox' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Notifications" %}</a>
+                        </li>
+                        {% iffeature 'wishlists' %}
+                            <li>
+                                <a href="{% url 'customer:wishlists-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Wish Lists" %}</a>
+                            </li>
+                        {% endiffeature %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-start mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">{% trans "Address Book" %}</h2>
+                        <a href="{% url 'customer:address-create' %}" class="inline-block bg-[#015F8A] text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20">
+                            {% trans "Add a new address" %}
+                        </a>
+                    </div>
+                    
+                    {% if addresses %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {% for address in addresses %}
+                                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col">
+                                    <div class="flex-grow mb-4">
+                                        <div class="flex items-start gap-4 mb-3">
+                                            {% if address.is_default_for_shipping %}
+                                                <span class="text-xs font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">{% trans 'Default shipping' %}</span>
+                                            {% endif %}
+                                            {% if address.is_default_for_billing %}
+                                                <span class="text-xs font-bold bg-green-100 text-green-800 px-2 py-1 rounded-full">{% trans 'Default billing' %}</span>
+                                            {% endif %}
+                                        </div>
+                                        <address class="text-sm text-gray-600 not-italic">
+                                            {% for field in address.active_address_fields %}
+                                                {{ field }}<br/>
+                                            {% endfor %}
+                                        </address>
+                                    </div>
+                                    <div class="text-sm flex items-center gap-2">
+                                        <a class="py-2 px-4 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 font-bold" href="{% url 'customer:address-detail' pk=address.id %}">{% trans 'Edit' %}</a>
+                                        <a href="{% url 'customer:address-delete' pk=address.id %}" class="py-2 px-4 rounded-lg text-red-600 hover:bg-red-50 font-bold">
+                                            {% trans 'Delete' %}
+                                        </a>
+                                        <div class="relative inline-block" x-data="{ open: false }">
+                                            <button @click="open = !open" class="py-2 px-3 rounded-lg text-gray-500 hover:bg-gray-200" title="{% trans 'More actions' %}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                                            </button>
+                                            <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border z-10">
+                                                <ul class="py-1">
+                                                    {% if address.country.is_shipping_country and not address.is_default_for_shipping %}
+                                                        <li><a href="{% url 'customer:address-change-status' pk=address.id action='default_for_shipping' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{% trans 'Set as default shipping address' %}</a></li>
+                                                    {% endif %}
+                                                    {% if not address.is_default_for_billing %}
+                                                        <li><a href="{% url 'customer:address-change-status' pk=address.id action='default_for_billing' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{% trans 'Set as default billing address' %}</a></li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if page_obj %}
+                            <div class="mt-8 flex justify-center">
+                                <nav>
+                                    <ul class="flex items-center -space-x-px">
+                                        {% if page_obj.has_previous %}
+                                            <li>
+                                                <a href="?{% get_parameters 'page' %}page={{ page_obj.previous_page_number }}" class="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                                                    {% trans "Previous" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        <li>
+                                            <span class="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300">
+                                                {% blocktrans with page_num=page_obj.number total_pages=paginator.num_pages %}
+                                                    Page {{ page_num }} of {{ total_pages }}
+                                                {% endblocktrans %}
+                                            </span>
+                                        </li>
+
+                                        {% if page_obj.has_next %}
+                                            <li>
+                                                <a href="?{% get_parameters 'page' %}page={{ page_obj.next_page_number }}" class="py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                                                    {% trans "Next" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        {% endif %}
+
+                    {% else %}
+                        <div class="bg-gray-50 rounded-[2rem] p-12 text-center border border-gray-100">
+                             <div class="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                             <h2 class="text-2xl font-bold text-gray-900 mb-2">{% trans 'You have no addresses.' %}</h2>
+                             <p class="text-gray-500">{% trans "Your address book is empty." %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include "components/basket-modal.html" %}
+
+<script src="//unpkg.com/alpinejs" defer></script>
+
+{% endblock %}

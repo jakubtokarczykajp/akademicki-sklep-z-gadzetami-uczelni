@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load display_tags %}
+
+{% block title %}
+    {% trans "Profile" %} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "My Account" %}</h1>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'customer:profile-view' %}" class="block py-3 px-4 rounded-xl text-sm font-bold {% if active_tab == 'profile' or not active_tab %}bg-[#015F8A] text-white{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{% trans "Profile" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:order-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold {% if active_tab == 'orders' %}bg-[#015F8A] text-white{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{% trans "Order History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:address-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold {% if active_tab == 'addresses' %}bg-[#015F8A] text-white{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{% trans "Address Book" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:email-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold {% if active_tab == 'emails' %}bg-[#015F8A] text-white{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{% trans "Email History" %}</a>
+                        </li>
+<li>
+                            <a href="{% url 'customer:alerts-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold {% if active_tab == 'alerts' %}bg-[#015F8A] text-white{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{% trans "Product Alerts" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:notifications-inbox' %}" class="block py-3 px-4 rounded-xl text-sm font-bold {% if active_tab == 'notifications' %}bg-[#015F8A] text-white{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{% trans "Notifications" %}</a>
+                        </li>
+                        {% iffeature 'wishlists' %}
+                            <li>
+                                <a href="{% url 'customer:wishlists-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold {% if active_tab == 'wishlists' %}bg-[#015F8A] text-white{% else %}text-gray-600 hover:bg-gray-100 hover:text-gray-900{% endif %}">{% trans "Wish Lists" %}</a>
+                            </li>
+                        {% endiffeature %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{% trans "Profile Details" %}</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <tbody>
+                                <tr class="border-b border-gray-100">
+                                    <th class="py-4 px-6 font-bold uppercase text-sm text-gray-500">{% trans 'Name' %}</th>
+                                    <td class="py-4 px-6 text-gray-800">{{ user.get_full_name|default:'-' }}</td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <th class="py-4 px-6 font-bold uppercase text-sm text-gray-500">{% trans 'Email address' %}</th>
+                                    <td class="py-4 px-6 text-gray-800">{{ user.email }}</td>
+                                </tr>
+                                {% block profile_fields %}
+                                    {% for field in profile_fields %}
+                                        <tr class="border-b border-gray-100">
+                                            <th class="py-4 px-6 font-bold uppercase text-sm text-gray-500">{{ field.name }}</th>
+                                            <td class="py-4 px-6 text-gray-800">{{ field.value|default:"-" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endblock %}
+                                <tr>
+                                    <th class="py-4 px-6 font-bold uppercase text-sm text-gray-500">{% trans 'Date registered' %}</th>
+                                    <td class="py-4 px-6 text-gray-800">{{ user.date_joined|date:"d M Y" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        <a href="{% url 'customer:profile-update' %}" class="inline-block bg-[#015F8A] text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20">{% trans 'Edit profile' %}</a>
+                        <a href="{% url 'customer:change-password' %}" class="inline-block bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors">{% trans 'Change password' %}</a>
+                        <a id="delete_profile" href="{% url 'customer:profile-delete' %}" class="inline-block bg-red-50 text-red-600 font-bold py-3 px-6 rounded-xl hover:bg-red-100 transition-colors">{% trans 'Delete profile' %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{# To musi być w bloku content, bo base.html go zawiera, a nie ma innych bloków na body #}
+{% include "components/basket-modal.html" %}
+
+{% endblock %}

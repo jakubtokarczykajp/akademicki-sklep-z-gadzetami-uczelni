@@ -43,17 +43,8 @@ async function updateBasketView() {
     const data = await fetchBasketData();
     if (!data) return;
 
+    // 1. Zaktualizuj zawartość modala (zawsze)
     basketContent.innerHTML = '';
-
-    // Aktualizacja licznika na navbarze
-    if (basketCounter) {
-        basketCounter.innerText = data.items_count;
-        basketCounter.classList.remove('hidden');
-        if (data.items_count === 0) basketCounter.classList.add('hidden');
-    }
-
-    // Aktualizacja sumy
-    if (basketTotal) basketTotal.innerText = `${data.total_price}`;
 
     if (data.products.length === 0) {
         basketContent.innerHTML = `
@@ -68,6 +59,40 @@ async function updateBasketView() {
         data.products.forEach(product => {
             basketContent.innerHTML += createProductHTML(product);
         });
+    }
+
+    // 2. Zaktualizuj globalne wskaźniki (licznik, suma)
+    if (basketCounter) {
+        basketCounter.innerText = data.items_count;
+        basketCounter.classList.remove('hidden');
+        if (data.items_count === 0) basketCounter.classList.add('hidden');
+    }
+    document.querySelectorAll('[data-basket-total]').forEach(el => el.innerText = `${data.total_price}`);
+
+    // 3. Jeśli jesteśmy na stronie koszyka, odśwież jej zawartość
+    const mainBasketContainer = document.getElementById('basket-content-wrapper');
+    if (mainBasketContainer) {
+        try {
+            // Pobierz HTML strony koszyka
+            const response = await fetch(window.location.href);
+            const html = await response.text();
+
+            // Użyj DOMParser do stworzenia nowego dokumentu w pamięci
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Znajdź nowy kontener w odpowiedzi
+            const newMainBasketContainer = doc.getElementById('basket-content-wrapper');
+
+            // Jeśli znaleziono, zamień starą zawartość na nową
+            if (newMainBasketContainer) {
+                mainBasketContainer.innerHTML = newMainBasketContainer.innerHTML;
+            }
+        } catch (error) {
+            console.error('Błąd odświeżania widoku koszyka:', error);
+            // W razie błędu można awaryjnie przeładować stronę
+            // window.location.reload(); 
+        }
     }
 }
 
@@ -167,23 +192,13 @@ async function addProductToBasket(e){
 }
 
 // Zmiana ilości (Obsługa + / - w modalu)
-// UWAGA: Oscar nie ma domyślnego endpointu JSON do zmiany ilości jednej linii w prosty sposób
-// Musimy wysłać formularz POST na /shop/basket/
-// Dla uproszczenia w tym projekcie, założymy że formularz koszyka jest standardowy
-// i użyjemy sztuczki z przesyłaniem formularza formsetu, ale to skomplikowane w czystym AJAX.
-// Lepsze podejście: usuń linię i dodaj produkt ponownie (dla +) lub zmniejsz.
-// Ale Oscar obsługuje update linii via POST. Zróbmy to tak:
-
 async function updateQuantity(lineId, newQuantity) {
     if (newQuantity < 1) {
-        // Jeśli 0, usuwamy (zakładam, że deleteLine masz już zrobione)
+        // Jeśli 0, usuwamy
         return deleteLine(lineId);
     }
 
-    // Pobieramy token CSRF (wymagany przez Django przy POST)
     const csrftoken = getCookie('csrftoken');
-
-    // Budujemy dane formularza
     const formData = new FormData();
     formData.append('line_id', lineId);
     formData.append('quantity', newQuantity);
@@ -198,9 +213,7 @@ async function updateQuantity(lineId, newQuantity) {
         });
 
         const data = await response.json();
-        console.log(data)
         if (data.status === 'ok') {
-            // Odświeżamy cały widok koszyka, aby zaktualizować licznik, sumę i listy
             await updateBasketView();
         } else {
             console.error('Błąd aktualizacji:', data.message);
@@ -213,14 +226,10 @@ async function updateQuantity(lineId, newQuantity) {
 }
 
 // Usuwanie linii z koszyka
-// Usuwanie linii z koszyka
 async function deleteLine(lineId) {
     const csrftoken = getCookie('csrftoken');
 
     try {
-        // Używamy tego samego endpointu API co przy zmianie ilości.
-        // W views.py zaimplementowaliśmy logikę: jeśli quantity <= 0 -> line.delete()
-        // Upewnij się, że URL '/api/basket/update-line/' odpowiada temu zdefiniowanemu w urls.py
         const response = await fetch('/api/basket/update-line/', {
             method: 'POST',
             headers: {
@@ -228,12 +237,10 @@ async function deleteLine(lineId) {
                 'X-CSRFToken': csrftoken,
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            // Przesyłamy quantity=0, aby wymusić usunięcie
             body: `line_id=${lineId}&quantity=0`
         });
 
         if (response.ok) {
-            // Jeśli sukces, odświeżamy widok koszyka (AJAX) bez przeładowania strony
             await updateBasketView();
         } else {
             const data = await response.json();
@@ -244,7 +251,7 @@ async function deleteLine(lineId) {
     }
 }
 
-// Inicjalizacja przy starcie (żeby licznik był ok)
+// Inicjalizacja przy starcie
 document.addEventListener('DOMContentLoaded', () => {
     updateBasketView();
 });

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load currency_filters %}
+{% load widget_tweaks %}
+{% load display_tags %}
+
+{% block title %}
+    {% trans "Order History" %} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h7"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m21.74 16-.44-.44a2.12 2.12 0 0 0-3 0l-1.76 1.76a2.12 2.12 0 0 0 0 3l.44.44a2.12 2.12 0 0 0 3 0l1.76-1.76a2.12 2.12 0 0 0 0-3Z"/><path d="m18 19 3-3"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "My Account" %}</h1>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                     <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'customer:profile-view' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Profile" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:order-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold bg-[#015F8A] text-white">{% trans "Order History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:address-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Address Book" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:email-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Email History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:alerts-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Product Alerts" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:notifications-inbox' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Notifications" %}</a>
+                        </li>
+                        {% iffeature 'wishlists' %}
+                            <li>
+                                <a href="{% url 'customer:wishlists-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Wish Lists" %}</a>
+                            </li>
+                        {% endiffeature %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{% trans "Order History" %}</h2>
+                    
+                    {% if orders or form.is_bound %}
+                    <div class="bg-gray-50 border border-gray-100 rounded-2xl p-6 mb-8">
+                        <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-end">
+                            {% for field in form %}
+                                <div>
+                                    <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">{{ field.label }}</label>
+                                    {{ field|add_class:"w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors" }}
+                                </div>
+                            {% endfor %}
+                            <div class="flex items-center gap-4">
+                                <button type="submit" class="inline-block bg-[#015F8A] text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20 w-full sm:w-auto">
+                                    {% trans 'Filter results' %}
+                                </button>
+                                <a href="{% url 'customer:order-list' %}" class="text-sm text-gray-500 font-medium hover:text-gray-800">{% trans 'Reset' %}</a>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+
+                    {% if orders %}
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="py-3 px-6">{% trans "Order number" %}</th>
+                                        <th scope="col" class="py-3 px-6">{% trans "Date submitted" %}</th>
+                                        <th scope="col" class="py-3 px-6">{% trans "Num items" %}</th>
+                                        <th scope="col" class="py-3 px-6 text-right">{% trans "Total" %}</th>
+                                        <th scope="col" class="py-3 px-6"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr class="bg-white border-b hover:bg-gray-50">
+                                        <td class="py-4 px-6 font-medium text-gray-900">#{{ order.number }}</td>
+                                        <td class="py-4 px-6">{{ order.date_placed|date:"d M Y" }}</td>
+                                        <td class="py-4 px-6">{{ order.num_items }}</td>
+                                        <td class="py-4 px-6 text-right font-bold text-gray-900">{{ order.total_incl_tax|currency:order.currency }}</td>
+                                        <td class="py-4 px-6 text-right">
+                                            <a href="{% url 'customer:order' order_number=order.number %}" class="font-medium text-[#015F8A] hover:underline">{% trans "View" %}</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if page_obj %}
+                            <div class="mt-8 flex justify-center">
+                                <nav>
+                                    <ul class="flex items-center -space-x-px">
+                                        {% if page_obj.has_previous %}
+                                            <li>
+                                                <a href="?{% get_parameters 'page' %}page={{ page_obj.previous_page_number }}" class="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                                                    {% trans "Previous" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        <li>
+                                            <span class="py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300">
+                                                {% blocktrans with page_num=page_obj.number total_pages=paginator.num_pages %}
+                                                    Page {{ page_num }} of {{ total_pages }}
+                                                {% endblocktrans %}
+                                            </span>
+                                        </li>
+
+                                        {% if page_obj.has_next %}
+                                            <li>
+                                                <a href="?{% get_parameters 'page' %}page={{ page_obj.next_page_number }}" class="py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                                                    {% trans "Next" %}
+                                                </a>
+                                            </li>
+        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        {% endif %}
+
+                    {% else %}
+                         <div class="bg-gray-50 rounded-[2rem] p-12 text-center border border-gray-100">
+                            <div class="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h7"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m21.74 16-.44-.44a2.12 2.12 0 0 0-3 0l-1.76 1.76a2.12 2.12 0 0 0 0 3l.44.44a2.12 2.12 0 0 0 3 0l1.76-1.76a2.12 2.12 0 0 0 0-3Z"/><path d="m18 19 3-3"/></svg>
+                            </div>
+                             <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                                 {% if form.is_bound %}
+                                    {% trans "No orders match your search." %}
+                                {% else %}
+                                    {% trans "You haven't placed any orders yet." %}
+                                {% endif %}
+                            </h2>
+                             <p class="text-gray-500 mb-8">{% trans "When you place an order, it will appear here." %}</p>
+                            <a href="{% url 'home' %}" class="inline-block bg-[#015F8A] text-white font-bold py-4 px-10 rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20">
+                                {% trans "Start shopping" %}
+                            </a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include "components/basket-modal.html" %}
+{% endblock %}
