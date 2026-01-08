@@ -329,10 +329,10 @@
                                         </svg>
                                         </div>
                                     </button>
-                                    <form action="{% url 'customer:wishlists-add-product' product_pk=item.id %}" method="post" class="ml-2 mb-0">
+                                    <form action="{% url 'customer:wishlists-add-product' product_pk=item.id %}" method="post" class="ml-2 mb-0" data-wishlist-form>
                                         {% csrf_token %}
-                                        <button type="submit" class="bg-gray-200 text-gray-800 p-2 rounded-full hover:bg-gray-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.77-.77-.77a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"/></svg>
+                                        <button type="button" onclick="addProductToWishlist(event)" data-product-id="{{ item.id }}" class="bg-gray-200 text-gray-800 p-2 rounded-full hover:bg-gray-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucude-heart"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.77-.77-.77a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"/></svg>
                                         </button>
                                     </form>
                                 {% endif %}
