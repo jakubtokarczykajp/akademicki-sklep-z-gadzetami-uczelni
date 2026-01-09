@@ -38,10 +38,13 @@ urlpatterns = [
     # Przekierowanie ze strony głównej na /home/
     path('', lambda request: redirect('home/')),
 
+    # API endpoints - MUSZĄ być PRZED Oscar
+    path('api/basket/update-line/',  basket_views.update_line_quantity_api, name='api-basket-update-line'),
+    path('api/wishlists/', basket_views.get_user_wishlists_api, name='api-wishlists'),
+    path('api/wishlist/add-product/', basket_views.add_product_to_wishlist_api, name='api-wishlist-add-product'),
+
     # Sklep Oscar (musi być na końcu listy, bo przejmuje wiele adresów)
     path('shop/', include(apps.get_app_config('oscar').urls[0])),
-
-    path('api/basket/update-line/',  basket_views.update_line_quantity_api, name='api-basket-update-line'),
 ]
 
 if settings.DEBUG:

@@ -399,3 +399,192 @@ if (addToBasketForm) {
         }
     });
 }
+// Wishlist Modal Functions
+let currentProductId = null;
+
+function handleWishlistClick(event, productId) {
+    event.preventDefault();
+    event.stopPropagation(); // Zabezpieczenie - zapobiega propagacji kliknięcia do parentów
+    
+    // Sprawdzenie czy modal istnieje na stronie (czyli czy jesteśmy na stronie z base.html)
+    const modal = document.getElementById('wishlist-modal');
+    if (!modal) {
+        // Jeśli modalu nie ma (np. na home.html), przekieruj do logowania
+        displayNotification("Aby dodać do listy życzeń, musisz się zalogować.", "info");
+        window.location.href = '/shop/accounts/login/';
+        return;
+    }
+    
+    openWishlistModal(event, productId);
+}
+
+function openWishlistModal(event, productId) {
+    event.preventDefault();
+    
+    // Sprawdzenie czy modal istnieje na stronie
+    const modal = document.getElementById('wishlist-modal');
+    if (!modal) {
+        displayNotification("Modal listy życzeń nie jest dostępny. Przejdź do strony z logowaniem.", "error");
+        return;
+    }
+    
+    currentProductId = productId;
+    modal.style.display = 'flex';
+    
+    // Pobierz wishlists zaraz po otwarciu modalu
+    loadWishlists();
+}
+
+async function loadWishlists() {
+    try {
+        const response = await fetch('/api/wishlists/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        });
+        
+        if (!response.ok) {
+            console.error('Response not ok:', response.status, response.statusText);
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+      
+        const modalContent = document.getElementById('wishlist-modal-content');
+        
+        // Jeśli jest błąd w odpowiedzi
+        if (data.error) {
+            console.error('API Error:', data.error);
+            modalContent.innerHTML = `
+                <div class="text-center py-8">
+                    <p class="text-red-600">Błąd: ${data.error}</p>
+                    <p class="text-red-400 text-sm mt-2">Authenticated: ${data.authenticated}</p>
+                </div>
+            `;
+            return;
+        }
+        
+        if (data.wishlists && data.wishlists.length > 0) {
+            modalContent.innerHTML = data.wishlists.map(wishlist => `
+                <button 
+                    type="button" 
+                    onclick="selectWishlist(${wishlist.id}, event)" 
+                    class="w-full p-4 text-left bg-gray-50 hover:bg-[#015F8A] hover:text-white rounded-lg transition-all border border-gray-200 hover:border-[#015F8A]"
+                >
+                    <div class="font-medium">${wishlist.name}</div>
+                </button>
+            `).join('');
+        } else {
+            modalContent.innerHTML = `
+                <div class="text-center py-8">
+                    <p class="text-gray-600">Nie masz jeszcze żadnych list życzeń.</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading wishlists:', error);
+        const modalContent = document.getElementById('wishlist-modal-content');
+        modalContent.innerHTML = `
+            <div class="text-center py-8">
+                <p class="text-red-600">Błąd przy ładowaniu list życzeń.</p>
+                <p class="text-red-400 text-sm mt-2">${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+function closeWishlistModal() {
+    const modal = document.getElementById('wishlist-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    const input = document.getElementById('new-wishlist-name');
+    if (input) {
+        input.value = '';
+    }
+    currentProductId = null;
+}
+
+function selectWishlist(wishlistId, event) {
+    event.preventDefault();
+    addProductToWishlistId(currentProductId, wishlistId);
+}
+
+async function addProductToWishlistId(productId, wishlistId) {
+    const csrftoken = getCookie('csrftoken');
+    
+    try {
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        formData.append('wishlist_id', wishlistId);
+        
+        const response = await fetch('/api/wishlist/add-product/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+      
+        if (response.ok && data.status === 'success') {
+            displayNotification("Produkt został dodany do listy życzeń!", "success");
+            closeWishlistModal();
+        } else {
+            displayNotification(`Błąd: ${data.message || 'Nie udało się dodać produktu'}`, "error");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        displayNotification(`Błąd sieci: ${error.message}`, "error");
+    }
+}
+
+async function createAndAddWishlist(event) {
+    event.preventDefault();
+    const wishlistName = document.getElementById('new-wishlist-name').value.trim();
+    
+    if (!wishlistName) {
+        displayNotification("Proszę wpisać nazwę listy życzeń.", "error");
+        return;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+    
+    try {
+        // Tworzymy nową listę
+        const createResponse = await fetch('/shop/accounts/wishlists/create/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `name=${encodeURIComponent(wishlistName)}`
+        });
+
+        if (createResponse.ok) {
+            // Odczytujemy ID nowej listy z odpowiedzi
+            const data = await createResponse.json();
+            const wishlistId = data.id || data.key;
+            
+            // Dodajemy produkt do nowej listy
+            await addProductToWishlistId(currentProductId, wishlistId);
+        } else {
+            displayNotification("Błąd przy tworzeniu listy życzeń.", "error");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        displayNotification("Błąd sieci.", "error");
+    }
+}
+
+// Zamknij modal gdy kliknięto poza nim
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('wishlist-modal');
+    if (modal && event.target === modal) {
+        closeWishlistModal();
+    }
+});
