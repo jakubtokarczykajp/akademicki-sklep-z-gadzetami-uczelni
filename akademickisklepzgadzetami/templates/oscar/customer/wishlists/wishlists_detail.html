@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load display_tags %}
+{% load currency_filters %}
+{% load purchase_info_tags %}
+
+{% block title %}{% trans "Wish List" %} - {{ wishlist.name }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12 flex-grow w-full">
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.77-.77-.77a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"/><path d="M12 5v.01"/></svg>
+            </div>
+            <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "Wish List" %} - {{ wishlist.name }}</h1>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                     <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'customer:profile-view' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Profile" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:order-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Order History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:address-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Address Book" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:email-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Email History" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:alerts-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Product Alerts" %}</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer:notifications-inbox' %}" class="block py-3 px-4 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900">{% trans "Notifications" %}</a>
+                        </li>
+                        {% iffeature 'wishlists' %}
+                            <li>
+                                <a href="{% url 'customer:wishlists-list' %}" class="block py-3 px-4 rounded-xl text-sm font-bold bg-[#015F8A] text-white">{% trans "Wish Lists" %}</a>
+                            </li>
+                        {% endiffeature %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-start mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">{% trans "Items in" %} {{ wishlist.name }}</h2>
+                        <div class="flex items-center gap-2">
+                            <a href="{% url 'customer:wishlists-update' key=wishlist.key %}" class="inline-block bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-xl hover:bg-gray-300 transition-all">
+                                {% trans "Settings" %}
+                            </a>
+                            <a href="{% url 'customer:wishlists-delete' key=wishlist.key %}" class="inline-block bg-red-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-red-600 transition-all">
+                                {% trans "Delete Wishlist" %}
+                            </a>
+                            {% if wishlist.is_shareable %}
+                                <button type="button" onclick="navigator.clipboard.writeText('{{ wishlist.get_shared_url }}')" class="inline-block bg-[#015F8A] text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20">
+                                    {% trans "Share" %}
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if wishlist.lines.all %}
+                        <div class="space-y-6">
+                            {% for line in wishlist.lines.all %}
+                                {% purchase_info_for_line request line as session %}
+                                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-6 items-center transition-all hover:shadow-md">
+                                    {# Product Image #}
+                                    <div class="w-32 h-32 bg-gray-50 rounded-2xl p-2 flex-shrink-0 border border-gray-50">
+                                        {% with image=line.product.primary_image %}
+                                            <img src="{{ image.original.url }}" alt="{{ line.product.get_title }}" class="w-full h-full object-contain">
+                                        {% endwith %}
+                                    </div>
+
+                                    {# Product Info #}
+                                    <div class="flex-1 text-center sm:text-left">
+                                        <h2 class="text-xl font-bold text-gray-900 mb-1">{{ line.product.get_title }}</h2>
+                                        <p class="text-gray-400 text-sm mb-4">
+                                            {% trans "Unit price:" %} {{ line.unit_price_incl_tax|currency }}
+                                            {% if line.quantity > 1 %}
+                                                x {{ line.quantity }}
+                                            {% endif %}
+                                        </p>
+                                        
+                                        <div class="flex items-center justify-center sm:justify-start gap-4">
+                                            <form action="{% url 'customer:wishlists-remove-product' key=wishlist.key line_pk=line.id %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-gray-300 hover:text-red-500 transition-colors p-2" title="{% trans 'Remove product' %}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                                </button>
+                                            </form>
+                                            <a href="{{ line.product.get_absolute_url }}" class="inline-block bg-[#015F8A] text-white font-bold py-2 px-4 rounded-xl hover:bg-blue-600 transition-all">
+                                                {% trans "View Product" %}
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {# Total Price (if applicable, Oscar wishlists often don't sum prices directly) #}
+                                    <div class="text-right min-w-[120px]">
+                                        <p class="text-2xl font-black text-[#015F8A]">{{ line.line_price_incl_tax|currency }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="bg-gray-50 rounded-[2rem] p-12 text-center border border-gray-100">
+                            <div class="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.77-.77-.77a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"/><path d="M12 5v.01"/></svg>
+                            </div>
+                             <h2 class="text-2xl font-bold text-gray-900 mb-2">{% trans "This wish list is empty." %}</h2>
+                             <p class="text-gray-500 mb-8">{% trans "Add some items to it!" %}</p>
+                            <a href="{% url 'catalogue:index' %}" class="inline-block bg-[#015F8A] text-white font-bold py-4 px-10 rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20">
+                                {% trans "Start Shopping" %}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include "components/footer.html" %}
+{% endblock %}

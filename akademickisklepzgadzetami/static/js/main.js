@@ -366,3 +366,36 @@ async function addProductToWishlist(event) {
         displayNotification("Wystąpił błąd sieci podczas dodawania do listy życzeń.", "error");
     }
 }
+
+// Handler dla formularza dodawania do koszyka na stronie szczegółów produktu
+const addToBasketForm = document.getElementById('add_to_basket_form');
+if (addToBasketForm) {
+    addToBasketForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const csrftoken = getCookie('csrftoken');
+        const formData = new FormData(addToBasketForm);
+        
+        try {
+            const response = await fetch(addToBasketForm.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            });
+            
+            if (response.ok) {
+                displayNotification('Produkt dodany do koszyka!', 'success');
+                await updateBasketView();
+                openBasket();
+            } else {
+                displayNotification('Błąd dodawania produktu do koszyka', 'error');
+            }
+        } catch (error) {
+            console.error('Błąd:', error);
+            displayNotification('Błąd sieci przy dodawaniu do koszyka', 'error');
+        }
+    });
+}

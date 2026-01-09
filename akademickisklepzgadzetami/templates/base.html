@@ -23,6 +23,12 @@
         <form>{% csrf_token %}</form>
     </div>
     <div id="notification-container" class="fixed top-4 right-4 flex flex-col gap-2 z-[100]"></div>
+    
+    {% include 'components/basket-modal.html' %}
+    
+    {# Alpine.js dla interaktywnych komponentów #}
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     {# Dodajemy skrypt JS z mastera, który był w konflikcie #}
     <script src="{% static 'js/main.js' %}"></script>
 </body>
