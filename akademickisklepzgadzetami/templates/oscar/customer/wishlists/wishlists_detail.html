@@ -83,7 +83,14 @@
                                     <div class="flex-1 text-center sm:text-left">
                                         <h2 class="text-xl font-bold text-gray-900 mb-1">{{ line.product.get_title }}</h2>
                                         <p class="text-gray-400 text-sm mb-4">
-                                            {% trans "Unit price:" %} {{ line.unit_price_incl_tax|currency }}
+                                            {% trans "Unit price:" %} 
+                                            {% if session.price %}
+                                                {{ session.price.incl_tax|currency }}
+                                            {% elif line.product.price %}
+                                                {{ line.product.price|currency }}
+                                            {% else %}
+                                                {% trans "Price unavailable" %}
+                                            {% endif %}
                                             {% if line.quantity > 1 %}
                                                 x {{ line.quantity }}
                                             {% endif %}
