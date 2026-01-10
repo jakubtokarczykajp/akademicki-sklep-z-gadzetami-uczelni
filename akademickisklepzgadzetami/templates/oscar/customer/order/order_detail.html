@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% load currency_filters %}
+{% load display_tags %}
+{% load i18n %}
+{% load reviews_tags %}
+
+{% block title %}
+    {% trans "Order" %} #{{ order.number }} | {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-10">
+            <div class="bg-[#015F8A] p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h7"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m21.74 16-.44-.44a2.12 2.12 0 0 0-3 0l-1.76 1.76a2.12 2.12 0 0 0 0 3l.44.44a2.12 2.12 0 0 0 3 0l1.76-1.76a2.12 2.12 0 0 0 0-3Z"/><path d="m18 19 3-3"/></svg>
+            </div>
+            <div>
+                <h1 class="text-4xl font-black text-[#333] uppercase">{% trans "Order" %} #{{ order.number }}</h1>
+                {% if order.status %}
+                    <p class="text-gray-600 mt-2">{% trans "Status" %}: <span class="font-bold text-[#015F8A]">{{ order.status }}</span></p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Order Items -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{% trans "Items" %}</h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th class="py-3 px-6">{% trans 'Product' %}</th>
+                                    <th class="py-3 px-6 text-center">{% trans 'Qty' %}</th>
+                                    <th class="py-3 px-6 text-right">{% trans 'Price' %}</th>
+                                    <th class="py-3 px-6"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for line in order.lines.all %}
+                                    {% with product=line.product %}
+                                    <tr class="bg-white border-b hover:bg-gray-50">
+                                        <td class="py-4 px-6">
+                                            {% if product %}
+                                                {% if product.is_public %}
+                                                    <a href="{{ product.get_absolute_url }}" class="font-medium text-[#015F8A] hover:underline">{{ line.description }}</a>
+                                                {% else %}
+                                                    <span class="font-medium text-gray-900">{{ line.description }}</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="font-medium text-gray-900">{{ line.description }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="py-4 px-6 text-center">{{ line.quantity }}</td>
+                                        <td class="py-4 px-6 text-right font-bold text-gray-900">{{ line.line_price_before_discounts_incl_tax|currency:order.currency }}</td>
+                                        <td class="py-4 px-6">
+                                            {% if product and product.is_public %}
+                                                <form id="line_form_{{ line.id }}" action="{% url 'customer:order-line' order_number=order.number line_id=line.id %}" method="POST" class="inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="reorder" />
+                                                    <button id="reorder_line_{{ line.id }}" class="text-sm font-bold text-[#015F8A] hover:text-blue-700 transition-colors" type="submit">{% trans 'Re-order' %}</button>
+                                                </form>
+                                            {% else %}
+                                                <span class="text-xs text-gray-400">{% trans 'Not available' %}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% iffeature "reviews" %}
+                        <div class="mt-6 pt-6 border-t border-gray-100">
+                            <h3 class="font-bold text-gray-900 mb-4">{% trans "Product Reviews" %}</h3>
+                            <div class="space-y-3">
+                                {% for line in order.lines.all %}
+                                    {% with product=line.product %}
+                                        {% if product and product|is_review_permitted:user %}
+                                            <a href="{% url 'catalogue:reviews-add' product_slug=product.slug product_pk=product.id %}#addreview" class="inline-block text-sm font-bold text-white bg-[#015F8A] py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                                                {% trans 'Review' %} {{ line.description }}
+                                            </a>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endiffeature %}
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{% trans "Shipping Address" %}</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                            <h3 class="text-sm font-bold text-gray-700 uppercase mb-3">{% trans "Address" %}</h3>
+                            <div class="text-gray-900 space-y-1">
+                                {% for field in order.shipping_address.active_address_fields %}
+                                    <p>{{ field }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                            <div class="mb-6">
+                                <h3 class="text-sm font-bold text-gray-700 uppercase mb-2">{% trans "Contact Number" %}</h3>
+                                <p class="text-gray-900">{{ order.shipping_address.phone_number|default:"-" }}</p>
+                            </div>
+
+                            {% if order.shipping_address.notes %}
+                                <div>
+                                    <h3 class="text-sm font-bold text-gray-700 uppercase mb-2">{% trans "Notes" %}</h3>
+                                    <p class="text-gray-900">{{ order.shipping_address.notes|linebreaks }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Method -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{% trans "Shipping Method" %}</h2>
+                    <p class="text-gray-900 font-medium">{{ order.shipping_method }}</p>
+                </div>
+            </div>
+
+            <!-- Sidebar - Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 sticky top-24">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">{% trans "Order Summary" %}</h2>
+
+                    <div class="space-y-4 mb-6">
+                        <!-- Basket Total -->
+                        {% with discounts=order.basket_discounts %}
+                            <div class="flex justify-between py-3 border-b border-gray-100">
+                                <span class="text-gray-600">{% trans "Subtotal" %}</span>
+                                <span class="font-bold text-gray-900">{{ order.basket_total_before_discounts_incl_tax|currency:order.currency }}</span>
+                            </div>
+
+                            <!-- Discounts -->
+                            {% if discounts %}
+                                {% for discount in discounts %}
+                                    <div class="flex justify-between py-3 border-b border-gray-100 text-green-600">
+                                        <span class="text-sm">{{ discount.offer_name }}</span>
+                                        <span class="font-bold">-{{ discount.amount|currency:order.currency }}</span>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- Basket After Discounts -->
+                            <div class="flex justify-between py-3 border-b border-gray-100">
+                                <span class="text-gray-600">
+                                    {% if discounts %}
+                                        {% trans "Subtotal (after discounts)" %}
+                                    {% else %}
+                                        {% trans "Subtotal" %}
+                                    {% endif %}
+                                </span>
+                                <span class="font-bold text-gray-900">{{ order.basket_total_incl_tax|currency:order.currency }}</span>
+                            </div>
+                        {% endwith %}
+
+                        <!-- Shipping Totals -->
+                        {% block shipping_totals %}
+                            {% if order.has_shipping_discounts %}
+                                <div class="flex justify-between py-3 border-b border-gray-100">
+                                    <span class="text-gray-600">{% trans "Shipping (before discount)" %}</span>
+                                    <span class="font-bold text-gray-900">{{ order.shipping_before_discounts_incl_tax|currency:order.currency }}</span>
+                                </div>
+                                {% for discount in order.shipping_discounts %}
+                                    <div class="flex justify-between py-3 border-b border-gray-100 text-green-600">
+                                        <span class="text-sm">{{ discount.offer_name }}</span>
+                                        <span class="font-bold">-{{ discount.amount|currency:order.currency }}</span>
+                                    </div>
+                                {% endfor %}
+                                <div class="flex justify-between py-3 border-b border-gray-100">
+                                    <span class="text-gray-600">{% trans "Shipping (after discount)" %}</span>
+                                    <span class="font-bold text-gray-900">{{ order.shipping_incl_tax|currency:order.currency }}</span>
+                                </div>
+                            {% else %}
+                                <div class="flex justify-between py-3 border-b border-gray-100">
+                                    <span class="text-gray-600">{% trans "Shipping" %}</span>
+                                    <span class="font-bold text-gray-900">{{ order.shipping_incl_tax|currency:order.currency }}</span>
+                                </div>
+                            {% endif %}
+                        {% endblock %}
+
+                        <!-- Order Total -->
+                        <div class="flex justify-between py-4 bg-[#015F8A] bg-opacity-10 px-4 rounded-xl">
+                            <span class="font-bold text-gray-900">{% trans "Order Total" %}</span>
+                            <span class="font-bold text-xl text-[#015F8A]">{{ order.total_incl_tax|currency:order.currency }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Order Details -->
+                    <div class="space-y-3 text-sm mb-8">
+                        <div class="flex justify-between py-2 border-b border-gray-100">
+                            <span class="text-gray-600">{% trans "Order number" %}</span>
+                            <span class="font-bold text-gray-900">#{{ order.number }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-gray-100">
+                            <span class="text-gray-600">{% trans "Order date" %}</span>
+                            <span class="font-bold text-gray-900">{{ order.date_placed|date:"d M Y" }}</span>
+                        </div>
+                        <div class="flex justify-between py-2">
+                            <span class="text-gray-600">{% trans "Number of items" %}</span>
+                            <span class="font-bold text-gray-900">{{ order.num_items }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Re-order Button -->
+                    {% if order.lines.all %}
+                        <form id="order_form_{{ order.id }}" action="{% url 'customer:order' order_number=order.number %}" method="post" class="w-full">
+                            {% csrf_token %}
+                            <input type="hidden" name="order_id" value="{{ order.id }}" />
+                            <input type="hidden" name="action" value="reorder" />
+                            <button type="submit" class="w-full bg-[#015F8A] text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20">
+                                {% trans "Re-order all items" %}
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    <!-- Back to Orders -->
+                    <a href="{% url 'customer:order-list' %}" class="block mt-4 text-center text-[#015F8A] font-bold hover:underline">
+                        ← {% trans "Back to orders" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

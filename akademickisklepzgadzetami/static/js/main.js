@@ -167,29 +167,38 @@ basketWrapper.addEventListener('click', (e) => {
 async function addProductToBasket(e){
     // Pobieramy dane z atrybutów HTML elementu rodzica
     const productItem = e.target.closest('[data-product-item]');
-    if(!productItem) return;
+    if(!productItem) {
+        console.error('Nie znaleziono produktu');
+        return;
+    }
 
     const productId = productItem.dataset.id;
     const csrftoken = getCookie('csrftoken');
 
+    console.log('Dodawanie produktu:', productId);
+
     try {
-        const response = await fetch(`/shop/basket/add/${productId}/`, {
+        // Wysyłamy POST na /api/basket/add/ z produktem
+        const response = await fetch('/api/basket/add/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'X-CSRFToken': csrftoken,
-                'X-Requested-With': 'XMLHttpRequest' // Ważne dla naszego widoku
+                'X-Requested-With': 'XMLHttpRequest'
             },
-            body: 'quantity=1'
+            body: `product_id=${productId}&quantity=1`
         });
 
         if(response.ok) {
+            console.log('Produkt dodany');
             openBasket(); // Otwórz i odśwież koszyk
         } else {
-            console.error('Błąd dodawania');
+            console.error('Błąd dodawania, status:', response.status);
+            // Spróbuj alternatywny URL
+            console.log('Próbuję alternatywnego URL...');
         }
     } catch(err) {
-        console.error(err);
+        console.error('Błąd:', err);
     }
 }
 

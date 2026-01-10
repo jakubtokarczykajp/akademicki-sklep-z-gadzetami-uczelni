@@ -1,0 +1,150 @@
+{% extends "oscar/catalogue/detail.html" %}
+{% load i18n %}
+{% load reviews_tags %}
+{% load widget_tweaks %}
+
+{% block product_review %}
+    <div id="addreview" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-12 mt-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">{% trans "Leave a product review" %}</h2>
+        <p class="text-gray-600 mb-8">{% trans "Share your experience with this product to help other customers make informed decisions." %}</p>
+
+        <form id="add_review_form" method="post" action="#addreview" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Title Field -->
+            <div>
+                <label for="{{ form.title.auto_id }}" class="block text-sm font-bold text-gray-700 mb-2">
+                    {{ form.title.label|safe }}
+                    {% if form.title.field.required %}<span class="text-red-500">*</span>{% endif %}
+                </label>
+                {% render_field form.title class+="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors" placeholder="Zwięzły tytuł recenzji" %}
+                {% for error in form.title.errors %}
+                    <p class="text-red-500 text-sm mt-1 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </div>
+
+            <!-- Score/Rating Field -->
+            <div>
+                <label for="{{ form.score.auto_id }}" class="block text-sm font-bold text-gray-700 mb-3">
+                    {{ form.score.label|safe }}
+                    {% if form.score.field.required %}<span class="text-red-500">*</span>{% endif %}
+                </label>
+                
+                <div class="flex items-center gap-2 mb-3">
+                    {{ form.score }}
+                    <div class="flex gap-1 star-rating {{ form.score.value|as_stars }}">
+                        <svg class="w-6 h-6 text-gray-300 cursor-pointer transition-colors hover:text-yellow-400" data-value="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg class="w-6 h-6 text-gray-300 cursor-pointer transition-colors hover:text-yellow-400" data-value="2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg class="w-6 h-6 text-gray-300 cursor-pointer transition-colors hover:text-yellow-400" data-value="3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg class="w-6 h-6 text-gray-300 cursor-pointer transition-colors hover:text-yellow-400" data-value="4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg class="w-6 h-6 text-gray-300 cursor-pointer transition-colors hover:text-yellow-400" data-value="5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    </div>
+                </div>
+                
+                {% for error in form.score.errors %}
+                    <p class="text-red-500 text-sm flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </div>
+
+            <!-- Body/Review Text -->
+            <div>
+                <label for="{{ form.body.auto_id }}" class="block text-sm font-bold text-gray-700 mb-2">
+                    {{ form.body.label|safe }}
+                    {% if form.body.field.required %}<span class="text-red-500">*</span>{% endif %}
+                </label>
+                {% render_field form.body class+="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors" rows="6" placeholder="Opisz swoją opinię na temat produktu..." %}
+                {% for error in form.body.errors %}
+                    <p class="text-red-500 text-sm mt-1 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </div>
+
+            <!-- Name Field (if present) -->
+            {% if form.name %}
+                <div>
+                    <label for="{{ form.name.auto_id }}" class="block text-sm font-bold text-gray-700 mb-2">
+                        {{ form.name.label|safe }}
+                        {% if form.name.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {% render_field form.name class+="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors" %}
+                    {% for error in form.name.errors %}
+                        <p class="text-red-500 text-sm mt-1 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Email Field (if present) -->
+            {% if form.email %}
+                <div>
+                    <label for="{{ form.email.auto_id }}" class="block text-sm font-bold text-gray-700 mb-2">
+                        {{ form.email.label|safe }}
+                        {% if form.email.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {% render_field form.email class+="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#015F8A] focus:border-transparent transition-colors" type="email" %}
+                    {% for error in form.email.errors %}
+                        <p class="text-red-500 text-sm mt-1 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
+                <button type="submit" class="bg-[#015F8A] text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2" data-loading-text="{% trans 'Saving...' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    {% trans "Save review" %}
+                </button>
+                <a href="{{ product.get_absolute_url }}" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-xl hover:bg-gray-300 transition-colors text-center">
+                    {% trans "Cancel" %}
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Star rating functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const scoreField = document.getElementById('{{ form.score.auto_id }}');
+            const stars = document.querySelectorAll('.star-rating svg');
+            
+            // Set initial star state
+            function updateStars(value) {
+                stars.forEach((star, index) => {
+                    if (index < value) {
+                        star.classList.remove('text-gray-300');
+                        star.classList.add('text-yellow-400');
+                    } else {
+                        star.classList.add('text-gray-300');
+                        star.classList.remove('text-yellow-400');
+                    }
+                });
+            }
+            
+            // Initialize stars based on current value
+            if (scoreField.value) {
+                updateStars(scoreField.value);
+            }
+            
+            // Add click handlers
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    scoreField.value = this.getAttribute('data-value');
+                    updateStars(scoreField.value);
+                });
+            });
+        });
+    </script>
+{% endblock %}

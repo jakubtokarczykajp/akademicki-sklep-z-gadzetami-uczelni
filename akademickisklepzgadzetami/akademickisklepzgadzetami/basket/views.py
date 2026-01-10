@@ -6,7 +6,45 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.vary import vary_on_headers
 from django.views.decorators.http import require_http_methods
 
+Product = get_model('catalogue', 'Product')
 Line = get_model('basket', 'Line')
+
+
+@require_POST
+def add_product_to_basket_api(request):
+    """
+    API endpoint do dodawania produktu do koszyka.
+    Przyjmuje product_id i quantity.
+    """
+    product_id = request.POST.get('product_id')
+    quantity = request.POST.get('quantity', 1)
+    
+    if not product_id:
+        return JsonResponse({'status': 'error', 'message': 'Brak product_id'}, status=400)
+    
+    try:
+        quantity = int(quantity)
+        if quantity < 1:
+            return JsonResponse({'status': 'error', 'message': 'Ilość musi być większa niż 0'}, status=400)
+            
+        # Pobierz produkt
+        product = Product.objects.get(pk=product_id)
+        
+        # Dodaj do koszyka
+        request.basket.add_product(product, quantity=quantity)
+        
+        return JsonResponse({
+            'status': 'ok',
+            'message': f'Dodano {quantity} szt. {product.title}',
+            'basket_total': str(request.basket.total_incl_tax),
+            'basket_count': request.basket.num_items
+        })
+    except Product.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Produkt nie znaleziony'}, status=404)
+    except ValueError:
+        return JsonResponse({'status': 'error', 'message': 'Nieprawidłowa ilość'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
 @require_POST
