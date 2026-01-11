@@ -115,20 +115,9 @@ HAYSTACK_CONNECTIONS = {
 OSCAR_SEARCH_FACETS: dict[str, dict[str, dict[str, str]] | dict[str, dict[str, str | list[tuple[str, str]]]]] = {
     'fields': {
         'product_class': {'name': 'Typ', 'field': 'product_class'},
-        'price': {'name': 'Cena', 'field': 'price'},
     },
     'queries': {
-        'price_range': {
-            'name': 'Cena',
-            'field': 'price',
-            'queries': [
-                # ZMIANA: Dodano 'price:' przed nawiasem oraz nawiasy kwadratowe []
-                ('price:[0 TO 50]', 'Do 50 zł'),
-                ('price:[50 TO 100]', '50 zł - 100 zł'),
-                ('price:[100 TO 200]', '100 zł - 200 zł'),
-                ('price:[200 TO *]', 'Powyżej 200 zł'),
-            ]
-        },
+
     }
 }
 
