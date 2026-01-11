@@ -18,7 +18,6 @@ from oscar.defaults import *
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -81,12 +80,11 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'haystack',
     'treebeard',
-    'sorl.thumbnail',   # Default thumbnail backend, can be replaced
+    'sorl.thumbnail',  # Default thumbnail backend, can be replaced
     'django_tables2',
     'tailwind',
     'django_browser_reload',
 ]
-
 
 SITE_ID = 1
 
@@ -114,11 +112,9 @@ HAYSTACK_CONNECTIONS = {
         'PATH': BASE_DIR / 'whoosh_index',
     },
 }
-
 OSCAR_SEARCH_FACETS: dict[str, dict[str, dict[str, str]] | dict[str, dict[str, str | list[tuple[str, str]]]]] = {
     'fields': {
         'product_class': {'name': 'Typ', 'field': 'product_class'},
-
         'price': {'name': 'Cena', 'field': 'price'},
     },
     'queries': {
@@ -126,10 +122,11 @@ OSCAR_SEARCH_FACETS: dict[str, dict[str, dict[str, str]] | dict[str, dict[str, s
             'name': 'Cena',
             'field': 'price',
             'queries': [
-                ('0 TO 50', 'Do 50 zł'),
-                ('50 TO 100', '50 zł - 100 zł'),
-                ('100 TO 200', '100 zł - 200 zł'),
-                ('200 TO *', 'Powyżej 200 zł'),
+                # ZMIANA: Dodano 'price:' przed nawiasem oraz nawiasy kwadratowe []
+                ('price:[0 TO 50]', 'Do 50 zł'),
+                ('price:[50 TO 100]', '50 zł - 100 zł'),
+                ('price:[100 TO 200]', '100 zł - 200 zł'),
+                ('price:[200 TO *]', 'Powyżej 200 zł'),
             ]
         },
     }
@@ -156,7 +153,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'akademickisklepzgadzetami.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -171,7 +167,6 @@ DATABASES = {
         'ATOMIC_REQUESTS': True,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -190,7 +185,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 LOGIN_REDIRECT_URL = '/shop/accounts/'
 

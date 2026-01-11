@@ -4,43 +4,49 @@
 {% block title %}{{ category.name }} | {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="bg-gray-50 min-h-screen py-12">
-    <div class="container mx-auto px-4">
+    <div class="bg-gray-50 min-h-screen py-12">
+        <div class="container mx-auto px-4">
 
-        <header class="mb-12 text-center">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
-                {{ category.name }}
-            </h1>
-            {% if category.description %}
-                <div class="prose max-w-2xl mx-auto text-gray-500">
-                    {{ category.description|safe }}
+            <header class="mb-12 text-center">
+                <h1 class="text-4xl font-extrabold text-gray-900 mb-4">
+                    {{ category.name }}
+                </h1>
+                {% if category.description %}
+                    <div class="prose max-w-2xl mx-auto text-gray-500">
+                        {{ category.description|safe }}
+                    </div>
+                {% endif %}
+            </header>
+
+            {% if page_obj.object_list %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {% for product in page_obj.object_list %}
+                        {# W kategorii (nie w wyszukiwarce) product jest bezpośrednio dostępny #}
+                        {% include "oscar/catalogue/product_list.html" with product=product %}
+                    {% endfor %}
+                </div>
+
+                <div class="mt-16 flex justify-center">
+                    {# ZMIANA: Wskazanie na Twój plik w katalogu catalogue/partials #}
+                    {% include "oscar/catalogue/partials/pagination.html" %}
+                </div>
+            {% else %}
+                <div class="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
+                    <div class="mb-4 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Brak produktów</h3>
+                    <p class="text-gray-500 mb-6">W tej kategorii nie ma jeszcze produktów.</p>
+                    <a href="{% url 'home' %}"
+                       class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#015F8A] hover:bg-[#014f70] transition-colors">
+                        Wróć na stronę główną
+                    </a>
                 </div>
             {% endif %}
-        </header>
-
-        {% if page_obj.object_list %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {% for product in page_obj.object_list %}
-                    {# W kategorii (nie w wyszukiwarce) product jest bezpośrednio dostępny #}
-                    {% include "oscar/catalogue/product_list.html" with product=product %}
-                {% endfor %}
-            </div>
-
-            <div class="mt-16 flex justify-center">
-                {% include "oscar/partials/pagination.html" %}
-            </div>
-        {% else %}
-            <div class="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
-                <div class="mb-4 text-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-2">Brak produktów</h3>
-                <p class="text-gray-500 mb-6">W tej kategorii nie ma jeszcze produktów.</p>
-                <a href="{% url 'home' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#015F8A] hover:bg-[#014f70] transition-colors">
-                    Wróć na stronę główną
-                </a>
-            </div>
-        {% endif %}
+        </div>
     </div>
-</div>
 {% endblock %}

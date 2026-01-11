@@ -8,103 +8,116 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-gray-50 min-h-screen py-8">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-gray-50 min-h-screen py-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
 
-        {# Nagłówek wyników #}
-        <header class="mb-8">
-            <h1 class="text-3xl font-extrabold text-gray-900">
-                {% if query %}
-                    {% trans "Wyniki wyszukiwania dla:" %} <span class="text-[#015F8A]">"{{ query }}"</span>
-                {% else %}
-                    {% trans "Wszystkie produkty" %}
-                {% endif %}
-            </h1>
-            <p class="text-gray-500 mt-2">
-                {% blocktrans count num_results=paginator.count %}
-                    Znaleziono {{ num_results }} produkt
-                {% plural %}
-                    Znaleziono {{ num_results }} produktów
-                {% endblocktrans %}
-            </p>
-        </header>
+            <header class="mb-8">
+                <h1 class="text-3xl font-extrabold text-gray-900">
+                    {% if query and query != '*' %}
+                        {% trans "Wyniki wyszukiwania dla:" %} <span class="text-[#015F8A]">"{{ query }}"</span>
+                    {% else %}
+                        {% trans "Wszystkie produkty" %}
+                    {% endif %}
+                </h1>
+                <p class="text-gray-500 mt-2">
+                    {% blocktrans count num_results=paginator.count %}
+                        Znaleziono {{ num_results }} produkt
+                    {% plural %}
+                        Znaleziono {{ num_results }} produktów
+                    {% endblocktrans %}
+                </p>
+            </header>
 
-        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="flex flex-col lg:flex-row gap-8">
 
-            {# --- PANEL FILTRÓW (SIDEBAR) --- #}
-            {# Wyświetlamy tylko jeśli są zdefiniowane fasety w settings.py i Whoosh zwrócił dane #}
-            {% if has_facets %}
-            <aside class="w-full lg:w-1/4">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
-                    <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
-                        <h3 class="text-lg font-bold text-gray-900">{% trans "Filtruj" %}</h3>
-                        {% if selected_facets %}
-                            <a href="{% url 'search:search' %}?q={{ query }}" class="text-xs text-red-500 hover:underline">Wyczyść</a>
-                        {% endif %}
-                    </div>
-
-                    {# Lista Facetów #}
-                    {% for field, data in facet_data.items %}
-                        {% if data.results %}
-                            <div class="mb-6 last:mb-0">
-                                <h4 class="font-bold text-gray-700 mb-2 text-sm uppercase tracking-wide">{{ data.name }}</h4>
-                                <ul class="space-y-2">
-                                    {% for item in data.results %}
-                                        <li>
-                                            {% if item.selected %}
-                                                {# Aktywny filtr #}
-                                                <span class="flex items-center text-[#015F8A] font-bold cursor-default text-sm">
-                                                    <span class="w-4 h-4 mr-2 bg-[#015F8A] border border-[#015F8A] rounded flex items-center justify-center">
-                                                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                    </span>
-                                                    {{ item.name }}
-                                                    <span class="ml-auto text-gray-400 text-xs">{{ item.count }}</span>
-                                                </span>
-                                            {% else %}
-                                                {# Nieaktywny filtr #}
-                                                <a href="{{ item.select_url }}" class="flex items-center text-gray-600 hover:text-[#015F8A] transition-colors group text-sm">
-                                                    <span class="w-4 h-4 mr-2 border border-gray-300 rounded group-hover:border-[#015F8A]"></span>
-                                                    {{ item.name }}
-                                                    <span class="ml-auto text-gray-400 text-xs group-hover:text-[#015F8A]">{{ item.count }}</span>
-                                                </a>
-                                            {% endif %}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </aside>
-            {% endif %}
-
-            {# --- LISTA PRODUKTÓW (GRID) --- #}
-            <div class="w-full {% if has_facets %}lg:w-3/4{% endif %}">
-                {% if page_obj.object_list %}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {% for result in page_obj.object_list %}
-                            {% with product=result.object %}
-                                {% if product %}
-                                    {% include "oscar/catalogue/product_list.html" %}
+                {# --- PANEL FILTRÓW --- #}
+                {% if has_facets %}
+                    <aside class="w-full lg:w-1/4">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+                            <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
+                                <h3 class="text-lg font-bold text-gray-900">{% trans "Filtruj" %}</h3>
+                                {% if selected_facets %}
+                                    <a href="{% url 'search:search' %}?q={{ query }}"
+                                       class="text-xs text-red-500 hover:underline">Wyczyść</a>
                                 {% endif %}
-                            {% endwith %}
-                        {% endfor %}
-                    </div>
+                            </div>
 
-                    {# Paginacja #}
-                    <div class="mt-12">
-                        {% include "oscar/partials/pagination.html" with page_obj=page_obj search_query=query %}
-                    </div>
-                {% else %}
-                    <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <h3 class="text-xl font-medium text-gray-900">Nic nie znaleziono</h3>
-                        <p class="text-gray-500 mt-2">Dla zapytania: <strong>{{ query }}</strong></p>
-                        <a href="{% url 'search:search' %}" class="mt-6 inline-block text-[#015F8A] font-medium hover:underline">Wyczyść wyszukiwanie</a>
-                    </div>
+                            {% for field, data in facet_data.items %}
+                                {% if data.results %}
+                                    <div class="mb-6 last:mb-0">
+                                        <h4 class="font-bold text-gray-700 mb-2 text-sm uppercase tracking-wide">{{ data.name }}</h4>
+                                        <ul class="space-y-2">
+                                            {% for item in data.results %}
+                                                <li>
+                                                    {% if item.selected %}
+                                                        {# STAN ZAZNACZONY #}
+                                                        <a href="{{ item.deselect_url }}"
+                                                           class="flex items-center text-[#015F8A] font-bold cursor-pointer text-sm group"
+                                                           title="Usuń filtr">
+                <span class="w-4 h-4 mr-2 bg-[#015F8A] border border-[#015F8A] rounded flex items-center justify-center group-hover:bg-red-500 group-hover:border-red-500 transition-colors">
+                    {# Ikona X (widoczna po najechaniu) #}
+                    <svg class="w-3 h-3 text-white hidden group-hover:block" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                   d="M6 18L18 6M6 6l12 12"></path></svg>
+                    {# Ikona CHECK (widoczna domyślnie) #}
+                    <svg class="w-3 h-3 text-white group-hover:hidden" fill="none" stroke="currentColor"
+                         viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                   d="M5 13l4 4L19 7"></path></svg>
+                </span>
+                                                            {{ item.name }}
+                                                            <span class="ml-auto text-gray-400 text-xs">{{ item.count }}</span>
+                                                        </a>
+                                                    {% else %}
+                                                        {# STAN NIEZAZNACZONY #}
+                                                        <a href="{{ item.select_url }}"
+                                                           class="flex items-center text-gray-600 hover:text-[#015F8A] transition-colors group text-sm">
+                                                            <span class="w-4 h-4 mr-2 border border-gray-300 rounded group-hover:border-[#015F8A]"></span>
+                                                            {{ item.name }}
+                                                            <span class="ml-auto text-gray-400 text-xs group-hover:text-[#015F8A]">{{ item.count }}</span>
+                                                        </a>
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </aside>
                 {% endif %}
+
+                {# --- LISTA PRODUKTÓW --- #}
+                <div class="w-full {% if has_facets %}lg:w-3/4{% endif %}">
+                    {% if page_obj.object_list %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {% for result in page_obj.object_list %}
+                                {% with product=result.object %}
+                                    {% if product %}
+                                        {% include "oscar/catalogue/product_list.html" %}
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="mt-12">
+                            {% include "oscar/catalogue/partials/pagination.html" with page_obj=page_obj search_query=query %}
+                        </div>
+                    {% else %}
+                        <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
+                            <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="text-xl font-medium text-gray-900">Nic nie znaleziono</h3>
+                            <p class="text-gray-500 mt-2">Dla zapytania: <strong>{{ query }}</strong></p>
+                            <a href="{% url 'search:search' %}?q=*"
+                               class="mt-6 inline-block text-[#015F8A] font-medium hover:underline">Pokaż wszystkie
+                                produkty</a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
