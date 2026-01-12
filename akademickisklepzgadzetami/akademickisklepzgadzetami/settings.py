@@ -11,12 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import sys
 
-import os
-from pathlib import Path
 from oscar.defaults import *
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -27,9 +27,8 @@ SECRET_KEY = 'django-insecure-7!bkzra43#r(6mx2y2nw@zh%a%+ax3z=xrg#(5rk5i6-rz3q_7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['jakubtokarczyk00.pythonanywhere.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ["jakubtokarczyk00.pythonanywhere.com"]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Application definition
 
@@ -44,17 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
 
-    'akademickisklepzgadzetami.checkout.apps.CheckoutConfig',
-    'akademickisklepzgadzetami.basket.apps.BasketConfig',
-
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
+    'oscar.apps.checkout.apps.CheckoutConfig',
     'oscar.apps.address.apps.AddressConfig',
     'oscar.apps.shipping.apps.ShippingConfig',
     'oscar.apps.catalogue.apps.CatalogueConfig',
     'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
     'oscar.apps.communication.apps.CommunicationConfig',
     'oscar.apps.partner.apps.PartnerConfig',
+    'oscar.apps.basket.apps.BasketConfig',
     'oscar.apps.payment.apps.PaymentConfig',
     'oscar.apps.offer.apps.OfferConfig',
     'oscar.apps.order.apps.OrderConfig',
@@ -80,11 +78,12 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'haystack',
     'treebeard',
-    'sorl.thumbnail',  # Default thumbnail backend, can be replaced
+    'sorl.thumbnail',   # Default thumbnail backend, can be replaced
     'django_tables2',
     'tailwind',
     'django_browser_reload',
 ]
+
 
 SITE_ID = 1
 
@@ -98,7 +97,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'oscar.apps.basket.middleware.BasketMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -106,20 +104,20 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': BASE_DIR / 'whoosh_index',
-    },
-}
-OSCAR_SEARCH_FACETS: dict[str, dict[str, dict[str, str]] | dict[str, dict[str, str | list[tuple[str, str]]]]] = {
-    'fields': {
-        'product_class': {'name': 'Typ', 'field': 'product_class'},
-    },
-    'queries': {
-
+if 'test' in sys.argv:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+        }
     }
-}
+else:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+            'URL': 'http://127.0.0.1:8983/solr',
+            'INCLUDE_SPELLING': True,
+        },
+    }
 
 ROOT_URLCONF = 'akademickisklepzgadzetami.urls'
 
@@ -134,13 +132,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'akademickisklepzgadzetami.context_processors.user_wishlists',
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'akademickisklepzgadzetami.wsgi.application'
+
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -156,6 +154,7 @@ DATABASES = {
         'ATOMIC_REQUESTS': True,
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -175,18 +174,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_REDIRECT_URL = '/shop/accounts/'
-
-# Gdzie przekierować po wylogowaniu (Strona główna)
-LOGOUT_REDIRECT_URL = 'home'
-
-# URL strony logowania (używany przez dekorator @login_required)
-LOGIN_URL = '/shop/accounts/login/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'pl-PL'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -194,10 +186,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-OSCAR_DEFAULT_COUNTRY = 'PL'
-OSCAR_DEFAULT_CURRENCY = 'PLN'
-
-OSCAR_PRODUCTS_PER_PAGE = 5
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
@@ -218,6 +206,3 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
