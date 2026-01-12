@@ -1,4 +1,4 @@
-﻿# Instruckja
+﻿# Instrukcja instalacji
 
 ## Uruchamianie projektu (DEV)
 ### Windows
