@@ -1,15 +1,21 @@
-﻿# Uruchamianie projektu (DEV)
-## Windows
+﻿# Instruckja
+
+## Uruchamianie projektu (DEV)
+### Windows
 ```shell
 python -m venv .venv
-
 .\.venv\Scripts\Activate.ps1
-
 pip install -r requirements.txt
-
-# python manage.py migrate TEGO NIE !!!!!!!!!!!!!!!!!!!! BO PO BAZIEI BĘDZIE GG
 python manage.py runserver
+npm run dev
+```
+### Linux
 
+```shell
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python manage.py runserver
 npm run dev
 ```
 
@@ -28,4 +34,9 @@ Tworzenie użytkownika z dostępem
 
 ```shell
 python manage.py createsuperuser
+```
+## Testy
+
+```shell
+python manage.py test
 ```
