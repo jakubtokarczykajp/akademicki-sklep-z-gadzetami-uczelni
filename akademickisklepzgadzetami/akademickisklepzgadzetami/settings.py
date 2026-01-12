@@ -106,12 +106,20 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': BASE_DIR / 'whoosh_index',
-    },
-}
+if 'test' in sys.argv:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+        }
+    }
+else:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+            'PATH': BASE_DIR / 'whoosh_index',
+        },
+    }
+
 OSCAR_SEARCH_FACETS: dict[str, dict[str, dict[str, str]] | dict[str, dict[str, str | list[tuple[str, str]]]]] = {
     'fields': {
         'product_class': {'name': 'Typ', 'field': 'product_class'},
